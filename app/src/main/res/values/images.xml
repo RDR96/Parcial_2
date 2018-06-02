@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="header_images">
+        <item>@drawable/counter</item>
+        <item>@drawable/link</item>
+        <item>@drawable/sonic</item>
+    </array>
+</resources>

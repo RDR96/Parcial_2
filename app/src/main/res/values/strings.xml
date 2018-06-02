@@ -4,4 +4,11 @@
     <string name="open">Abrir</string>
     <string name="close">Cerrar</string>
 
+    <string name="news">Noticias</string>
+    <string name="games">Juegos</string>
+
+    <string name="lol">League Of Legends</string>
+    <string name="dota">Dota</string>
+    <string name="cs_go">CS GO</string>
+
 </resources>

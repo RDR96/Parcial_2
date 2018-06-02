@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/news_item"
+            android:title="@string/news"
+            />
+        <item
+            android:id="@+id/games_subheader"
+            android:title="@string/games"
+            >
+            <menu>
+                <item
+                    android:id="@+id/first_game"
+                    android:title="@string/lol"
+                    />
+                <item
+                    android:id="@+id/second_game"
+                    android:title="@string/dota"
+                    />
+
+                <item
+                    android:id="@+id/third_game"
+                    android:title="@string/cs_go"
+                    />
+
+            </menu>
+        </item>
+
+
+    </group>
+
+</menu>
