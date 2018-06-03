@@ -7,11 +7,29 @@
     <string name="favorites">Favoritos</string>
     <string name="options">Opciones</string>
 
+
     <string name="news">Noticias</string>
     <string name="games">Juegos</string>
 
     <string name="lol">League Of Legends</string>
     <string name="dota">Dota</string>
     <string name="cs_go">CS GO</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="insert_user_name">Ingrese usuario</string>
+    <string name="insert_user_password">Ingrese contraseña</string>
+    <string name="has_account">¿No tienes una cuenta?</string>
 
 </resources>
