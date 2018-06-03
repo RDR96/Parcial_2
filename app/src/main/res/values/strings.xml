@@ -3,6 +3,9 @@
 
     <string name="open">Abrir</string>
     <string name="close">Cerrar</string>
+    <string name="settings">Ajustes</string>
+    <string name="favorites">Favoritos</string>
+    <string name="options">Opciones</string>
 
     <string name="news">Noticias</string>
     <string name="games">Juegos</string>

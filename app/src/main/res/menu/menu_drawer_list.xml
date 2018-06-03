@@ -13,19 +13,47 @@
                 <item
                     android:id="@+id/first_game"
                     android:title="@string/lol"
+                    android:icon="@drawable/lol_logo"
                     />
                 <item
                     android:id="@+id/second_game"
                     android:title="@string/dota"
+                    android:icon="@drawable/dota_logo"
                     />
 
                 <item
                     android:id="@+id/third_game"
                     android:title="@string/cs_go"
+                    android:icon="@drawable/csgo_logo"
                     />
 
             </menu>
         </item>
+
+        <item
+            android:id="@+id/option_subheader"
+            android:title="@string/options"
+            >
+            <menu
+
+                >
+
+                <item
+
+                    android:id="@+id/settings_option"
+                    android:title="@string/settings"
+                    android:icon="@drawable/ic_settings_24dp"
+                    />
+
+                <item
+                    android:id="@+id/favorite_option"
+                    android:title="@string/favorites"
+                    android:icon="@drawable/ic_star_24dp"
+                    />
+
+            </menu>
+        </item>
+
 
 
     </group>
