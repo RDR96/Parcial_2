@@ -33,4 +33,9 @@
     <string name="has_account">¿No tienes una cuenta?</string>
     <string name="fill_fields">Rellene todos los campos</string>
 
+    <!--String relacionados al registro-->
+    <string name="check_password">Confirme contraseña</string>
+    <string name="create_account">Crear cuenta</string>
+    <string name="password_unmatch">Contraseñas diferentes</string>
+
 </resources>

@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         textButtonToRegister = findViewById(R.id.text_to_register);
         buttonSignIn = findViewById(R.id.button_sign_in);
         textFieldName = findViewById(R.id.textfield_name);
-        textFieldPassword = findViewById(R.id.textfield_name);
+        textFieldPassword = findViewById(R.id.textfield_password);
     }
 
     public void setConfiguration () {
