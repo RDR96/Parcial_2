@@ -3,12 +3,19 @@ package com.rdr.rodrigocorvera.gamenews.Actividades;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.Usuario;
 import com.rdr.rodrigocorvera.gamenews.R;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -39,11 +46,30 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if ( !textFieldName.getText().equals("") && !textFieldPassword.getText().equals("")  && !textFieldPasswordCheck.getText().equals("")) {
 
-                    if ( textFieldPassword.getText().equals(textFieldPasswordCheck.getText()) ) {
+                        final Usuario usuario = new Usuario();
+                        usuario.setUser(textFieldName.getText().toString());
+                        usuario.setAvatar("");
+                        usuario.setPassword(textFieldPassword.getText().toString());
 
-                    } else {
-                        Toast.makeText(RegisterActivity.this, R.string.password_unmatch, Toast.LENGTH_SHORT).show();
-                    }
+                        Call<Usuario> usuarioResponse = ApiAdapter.getApiHandler().insert_user(usuario, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjBmNDE1NjdkMjZmZDAwMjBmNjMyN2IiLCJpYXQiOjE1Mjc4OTk3MDIsImV4cCI6MTUyOTEwOTMwMn0.R7ieieRpNkRUT-YhwQccDecuohilo12hN0i2AaafS2Q");
+                        usuarioResponse.enqueue(new Callback<Usuario>() {
+                            @Override
+                            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                                if (response.isSuccessful() ) {
+                                    Usuario usuario1 = response.body();
+                                    Log.d("Id: ", usuario.get_id());
+                                } else {
+                                    Log.d("Error: ", response.errorBody().toString());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Usuario> call, Throwable t) {
+                                Toast.makeText(RegisterActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+
 
                 } else {
                     Toast.makeText(RegisterActivity.this, R.string.fill_fields, Toast.LENGTH_SHORT).show();
