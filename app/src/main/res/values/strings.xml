@@ -31,5 +31,6 @@
     <string name="insert_user_name">Ingrese usuario</string>
     <string name="insert_user_password">Ingrese contraseña</string>
     <string name="has_account">¿No tienes una cuenta?</string>
+    <string name="fill_fields">Rellene todos los campos</string>
 
 </resources>
