@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     Button buttonSignIn;
     EditText textFieldName;
     EditText textFieldPassword;
-    static String tokenAccess = null;
+    public static String tokenAccess = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +74,22 @@ public class LoginActivity extends AppCompatActivity {
         logInResponse.enqueue(new Callback<Usuario>() {
             @Override
             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+
                 if ( response.isSuccessful() ) {
                     try{
+
                         String json = response.body().toString();
                         JSONObject data = null;
                         data = new JSONObject(json);
                         tokenAccess = data.getString("token");
+                        Log.d("token", tokenAccess);
                         if ( !tokenAccess.equals("null")) {
+
                             Toast.makeText(LoginActivity.this, R.string.successful, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+
                         } else {
                             Toast.makeText(LoginActivity.this, R.string.wrong_data_type, Toast.LENGTH_SHORT).show();
                         }
@@ -91,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.wrong_data_type, Toast.LENGTH_SHORT).show();
                 }
+
             }
 
             @Override

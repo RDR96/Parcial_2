@@ -2,20 +2,31 @@ package com.rdr.rodrigocorvera.gamenews.Actividades;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.media.MediaExtractor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
+import com.rdr.rodrigocorvera.gamenews.Interfaces.DataService;
 import com.rdr.rodrigocorvera.gamenews.R;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -40,8 +51,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getNews();
         getViews();
         setConfiguration();
+
+    }
+
+    public void getNews () {
+
+        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
+
+        noticias.enqueue(new Callback<List<Noticia>>() {
+            @Override
+            public void onResponse(Call<List<Noticia>> call, Response<List<Noticia>> response) {
+
+                if ( response.isSuccessful() ) {
+                    List<Noticia> allNews = response.body();
+                    for (Noticia element : allNews) {
+                        if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
+                            Log.d("id:", element.get_id());
+                            Log.d("titulo:", element.getTitle());
+                            Log.d("body:", element.getBody());
+                            Log.d("game:", element.getGame());
+                            Log.d("coverImage:", element.getCoverImage());
+                            Log.d("created_date:", element.getCreated_date());
+                            Log.d("version:", String.valueOf(element.get__v()));
+                            System.out.println();
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Noticia>> call, Throwable t) {
+
+            }
+        });
 
     }
 

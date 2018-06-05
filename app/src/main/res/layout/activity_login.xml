@@ -70,6 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/insert_user_password"
+            android:inputType="textPassword"
             android:textAlignment="center"
             />
 

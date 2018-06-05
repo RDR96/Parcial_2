@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.Interfaces.DataService;
+
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -41,9 +44,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getNews();
         getViews();
         setConfiguration();
 
+    }
+
+    public void getNews () {
+
+        DataService api = ApiAdapter.getApiHandler();
     }
 
     public void setConfiguration () {
@@ -63,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 imageView.setImageDrawable(images.getDrawable(getRandomValue(images.length())));
-
             }
 
         };
