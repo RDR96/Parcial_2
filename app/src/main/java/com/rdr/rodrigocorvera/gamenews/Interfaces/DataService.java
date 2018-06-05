@@ -4,6 +4,8 @@ import com.rdr.rodrigocorvera.gamenews.Clases.Usuario;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -13,8 +15,20 @@ import retrofit2.http.POST;
  */
 
 public interface DataService {
-    @Headers("Content-Type: application/x-www-form-urlencoded")
+
+    @FormUrlEncoded
     @POST("users")
-    Call<Usuario> insert_user(@Body Usuario usuario,@Header("Authorization") String authHeader);
+    Call<Usuario> insert_user(@Field("user") String user,
+                              @Field("avatar") String avatar,
+                              @Field("password") String password,
+                              @Header("Authorization") String authHeader);
+
+
+    //@Headers("Content-Type: application/x-www-form-urlencoded")
+    @FormUrlEncoded
+    @POST("login")
+    Call<Usuario> get_token(@Field("user") String user,
+                            @Field("password") String password
+                            );
 
 }

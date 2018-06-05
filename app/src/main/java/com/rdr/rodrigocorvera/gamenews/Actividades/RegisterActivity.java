@@ -46,20 +46,21 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if ( !textFieldName.getText().equals("") && !textFieldPassword.getText().equals("")  && !textFieldPasswordCheck.getText().equals("")) {
 
-                        final Usuario usuario = new Usuario();
-                        usuario.setUser(textFieldName.getText().toString());
-                        usuario.setAvatar("");
-                        usuario.setPassword(textFieldPassword.getText().toString());
+                        String user = textFieldName.getText().toString();
+                        String url = "";
+                        String password = textFieldPassword.getText().toString();
 
-                        Call<Usuario> usuarioResponse = ApiAdapter.getApiHandler().insert_user(usuario, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjBmNDE1NjdkMjZmZDAwMjBmNjMyN2IiLCJpYXQiOjE1Mjc4OTk3MDIsImV4cCI6MTUyOTEwOTMwMn0.R7ieieRpNkRUT-YhwQccDecuohilo12hN0i2AaafS2Q");
+                        Call<Usuario> usuarioResponse = ApiAdapter.getApiHandler().insert_user(user, url, password, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjBmNDE1NjdkMjZmZDAwMjBmNjMyN2IiLCJpYXQiOjE1Mjc4OTk3MDIsImV4cCI6MTUyOTEwOTMwMn0.R7ieieRpNkRUT-YhwQccDecuohilo12hN0i2AaafS2Q");
+
                         usuarioResponse.enqueue(new Callback<Usuario>() {
                             @Override
                             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                                 if (response.isSuccessful() ) {
                                     Usuario usuario1 = response.body();
-                                    Log.d("Id: ", usuario.get_id());
+                                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                    finish();
                                 } else {
-                                    Log.d("Error: ", response.errorBody().toString());
+                                    Toast.makeText(RegisterActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -68,9 +69,6 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.makeText(RegisterActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
                             }
                         });
-
-
-
                 } else {
                     Toast.makeText(RegisterActivity.this, R.string.fill_fields, Toast.LENGTH_SHORT).show();
                 }

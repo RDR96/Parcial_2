@@ -12,14 +12,31 @@ import java.util.List;
 
 public class Usuario {
 
-    public List<Object> favoriteNews;
-    public String _id;
-    public String user;
-    public String avatar;
-    public String password;
-    public Date created_date;
-    public int __v;
+    private List<Object> favoriteNews;
+    private String _id;
+    private String user;
+    private String avatar;
+    private String password;
+    private Date created_date;
+    private int __v;
+    private String token;
+    private String message;
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public List<Object> getFavoriteNews() {
         return favoriteNews;
@@ -75,5 +92,20 @@ public class Usuario {
 
     public void set__v(int __v) {
         this.__v = __v;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "favoriteNews:" + favoriteNews +
+                ", _id:'" + _id + '\'' +
+                ", user:'" + user + '\'' +
+                ", avatar:'" + avatar + '\'' +
+                ", password:'" + password + '\'' +
+                ", created_date:" + created_date +
+                ", __v:" + __v +
+                ", token:'" + token + '\'' +
+                ", message:'" + message + '\'' +
+                '}';
     }
 }
