@@ -4,12 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.Adaptadores.NewsAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
@@ -39,7 +42,8 @@ public class NewsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private List<Noticia> dataNoticias;
+    private ArrayList<Noticia> dataNoticias;
+    private NewsAdapter newsAdapter;
     private OnFragmentInteractionListener mListener;
 
     public NewsFragment() {
@@ -76,14 +80,20 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_news, container, false);
+       final View view = inflater.inflate(R.layout.fragment_news, container, false);
 
-        fillArray();
+        fillArray(view);
 
-        return inflater.inflate(R.layout.fragment_news, container, false);
+
+        for (Noticia element : dataNoticias) {
+            Log.d ("id:", element.get_id());
+            Log.d ("title:", element.getTitle());
+        }
+
+        return view;
     }
 
-    public void fillArray () {
+    public void fillArray (final View view) {
         dataNoticias = new ArrayList<Noticia>();
         Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
 
@@ -97,6 +107,11 @@ public class NewsFragment extends Fragment {
                             dataNoticias.add(element);
                         }
                     }
+                    newsAdapter = new NewsAdapter(getContext(), dataNoticias);
+                    RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
+                    LinearLayoutManager linear = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linear);
+                    recyclerView.setAdapter(newsAdapter);
                 }
             }
             @Override
@@ -104,6 +119,7 @@ public class NewsFragment extends Fragment {
 
             }
         });
+
 
     }
 

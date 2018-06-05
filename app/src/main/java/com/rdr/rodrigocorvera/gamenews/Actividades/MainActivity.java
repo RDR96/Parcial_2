@@ -3,6 +3,7 @@ package com.rdr.rodrigocorvera.gamenews.Actividades;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.media.MediaExtractor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -16,10 +17,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.NewsFragment;
 import com.rdr.rodrigocorvera.gamenews.Interfaces.DataService;
 import com.rdr.rodrigocorvera.gamenews.R;
 import retrofit2.Call;
@@ -29,7 +32,7 @@ import retrofit2.Response;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, NewsFragment.OnFragmentInteractionListener{
 
     DrawerLayout drawerLayout;
 
@@ -51,45 +54,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getNews();
         getViews();
         setConfiguration();
-
     }
 
-    public void getNews () {
-
-        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
-
-        noticias.enqueue(new Callback<List<Noticia>>() {
-            @Override
-            public void onResponse(Call<List<Noticia>> call, Response<List<Noticia>> response) {
-
-                if ( response.isSuccessful() ) {
-                    List<Noticia> allNews = response.body();
-                    for (Noticia element : allNews) {
-                        if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
-                            Log.d("id:", element.get_id());
-                            Log.d("titulo:", element.getTitle());
-                            Log.d("body:", element.getBody());
-                            Log.d("game:", element.getGame());
-                            Log.d("coverImage:", element.getCoverImage());
-                            Log.d("created_date:", element.getCreated_date());
-                            Log.d("version:", String.valueOf(element.get__v()));
-                            System.out.println();
-                        }
-                    }
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Noticia>> call, Throwable t) {
-
-            }
-        });
-
-    }
 
     public void setConfiguration () {
         random = new Random();
@@ -119,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
         }
+
+        NewsFragment newsFragment = new NewsFragment();
+        FrameLayout fm = findViewById(R.id.frame_section);
+        fm.removeAllViews();
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_section, newsFragment).commit();
     }
 
     public void getViews() {
@@ -157,6 +130,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return random.nextInt(n);
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }
 
 
