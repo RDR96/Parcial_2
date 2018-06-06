@@ -1,5 +1,7 @@
 package com.rdr.rodrigocorvera.gamenews.Clases;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Rodrigo Corvera on 4/6/2018.
  */

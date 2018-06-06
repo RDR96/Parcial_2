@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,33 +86,44 @@ public class NewsFragment extends Fragment {
         fillArray(view);
 
 
-        for (Noticia element : dataNoticias) {
-            Log.d ("id:", element.get_id());
-            Log.d ("title:", element.getTitle());
-        }
-
         return view;
     }
 
     public void fillArray (final View view) {
+
         dataNoticias = new ArrayList<Noticia>();
+
         Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
 
         noticias.enqueue(new Callback<List<Noticia>>() {
             @Override
             public void onResponse(Call<List<Noticia>> call, Response<List<Noticia>> response) {
+
                 if ( response.isSuccessful() ) {
+
                     List<Noticia> allNews = response.body();
+
                     for (Noticia element : allNews) {
+
                         if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
                             dataNoticias.add(element);
                         }
+
                     }
+
                     newsAdapter = new NewsAdapter(getContext(), dataNoticias);
+
                     RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
-                    LinearLayoutManager linear = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(linear);
+
+                    StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+                    recyclerView.setLayoutManager(staggeredGridLayoutManager);
+                    ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                    //recyclerView.setLayoutParams(layoutParams);
+
                     recyclerView.setAdapter(newsAdapter);
+
                 }
             }
             @Override

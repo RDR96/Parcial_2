@@ -3,11 +3,19 @@
 
     <string name="open">Abrir</string>
     <string name="close">Cerrar</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
     <string name="settings">Ajustes</string>
     <string name="favorites">Favoritos</string>
     <string name="options">Opciones</string>
     <string name="successful">Exitoso</string>
     <string name="error">Error</string>
+
+
+
+    <!--Relacionado a cerrar sesión-->
+    <string name="log_out">Cerrar sesión</string>
+    <string name="confirm_log_out">¿Desea cerrar sesión?</string>
 
 
     <string name="news">Noticias</string>

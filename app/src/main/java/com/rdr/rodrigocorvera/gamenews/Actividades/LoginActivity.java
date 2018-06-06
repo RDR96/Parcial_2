@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     try{
 
                         String json = response.body().toString();
+
                         JSONObject data = null;
                         data = new JSONObject(json);
                         tokenAccess = data.getString("token");
@@ -88,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, R.string.successful, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
+
                             finish();
 
                         } else {

@@ -49,6 +49,13 @@
                     android:id="@+id/favorite_option"
                     android:title="@string/favorites"
                     android:icon="@drawable/ic_star_24dp"
+
+                    />
+
+                <item
+                    android:id="@+id/log_out_option"
+                    android:title="@string/log_out"
+                    android:icon="@drawable/ic_close_24dp"
                     />
 
             </menu>

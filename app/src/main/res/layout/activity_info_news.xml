@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+
+    tools:context="com.rdr.rodrigocorvera.gamenews.Actividades.InfoNewsActivity">
+    
+    <TextView
+        android:id="@+id/info_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Texto prueba"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:padding="8dp"
+        />
+    
+    <ImageView
+        android:id="@+id/info_image"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/link"
+        />
+
+    <TextView
+        android:id="@+id/info_subheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Prueba"
+        android:textSize="28sp"
+        android:padding="8dp"
+        />
+    
+    <TextView
+        android:id="@+id/info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="edesudheuuhdue"
+        android:textSize="22sp"
+        android:padding="8dp"
+        />
+
+</LinearLayout>

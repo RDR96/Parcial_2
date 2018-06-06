@@ -21,19 +21,21 @@ public class ApiAdapter {
 
     public static DataService getApiHandler () {
 
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        /*HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-        httpClient.addInterceptor(logging);
+        httpClient.addInterceptor(logging);*/
 
+        if ( API_HANDLER == null ) {
 
-        if (API_HANDLER == null) {
             Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
+
             API_HANDLER = retrofit.create(DataService.class);
+
         }
 
         return API_HANDLER;
