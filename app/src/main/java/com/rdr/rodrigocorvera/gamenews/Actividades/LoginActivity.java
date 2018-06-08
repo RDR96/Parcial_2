@@ -1,12 +1,15 @@
 package com.rdr.rodrigocorvera.gamenews.Actividades;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     Button buttonSignIn;
     EditText textFieldName;
     EditText textFieldPassword;
+    ProgressBar progressBar;
     public static String tokenAccess = null;
 
     @Override
@@ -43,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonSignIn = findViewById(R.id.button_sign_in);
         textFieldName = findViewById(R.id.textfield_name);
         textFieldPassword = findViewById(R.id.textfield_password);
+        progressBar = findViewById(R.id.progress_bar);
     }
 
     public void setConfiguration () {
@@ -70,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
     public void checkLogIn (String user, String password) {
 
         Call<Usuario> logInResponse = ApiAdapter.getApiHandler().get_token(user, password);
-
+        prepareForLogin();
         logInResponse.enqueue(new Callback<Usuario>() {
             @Override
             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
@@ -85,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                         tokenAccess = data.getString("token");
                         Log.d("token", tokenAccess);
                         if ( !tokenAccess.equals("null")) {
-
+                            progressBar.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, R.string.successful, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
@@ -93,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
 
                         } else {
+
                             Toast.makeText(LoginActivity.this, R.string.wrong_data_type, Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
@@ -101,15 +107,23 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.wrong_data_type, Toast.LENGTH_SHORT).show();
                 }
-
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<Usuario> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(LoginActivity.this, R.string.log_in_error, Toast.LENGTH_SHORT).show();
             }
         });
 
+    }
+
+    public void prepareForLogin() {
+        View view  = this.getCurrentFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
 }

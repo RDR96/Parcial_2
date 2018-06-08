@@ -5,30 +5,15 @@
             android:id="@+id/news_item"
             android:title="@string/news"
             />
-        <item
-            android:id="@+id/games_subheader"
-            android:title="@string/games"
-            >
-            <menu>
-                <item
-                    android:id="@+id/first_game"
-                    android:title="@string/lol"
-                    android:icon="@drawable/lol_logo"
-                    />
-                <item
-                    android:id="@+id/second_game"
-                    android:title="@string/dota"
-                    android:icon="@drawable/dota_logo"
-                    />
+            <item
+                android:id="@+id/games_subheader"
+                android:title="@string/games"
+                >
+                <menu>
 
-                <item
-                    android:id="@+id/third_game"
-                    android:title="@string/cs_go"
-                    android:icon="@drawable/csgo_logo"
-                    />
+                </menu>
 
-            </menu>
-        </item>
+            </item>
 
         <item
             android:id="@+id/option_subheader"

@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mNavigationView.setNavigationItemSelectedListener(this);
         }
 
+        fillGameList();
+
         NewsFragment newsFragment = new NewsFragment();
         FrameLayout fm = findViewById(R.id.frame_section);
         fm.removeAllViews();
@@ -106,48 +109,98 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView = findViewById(R.id.navigation_view);
     }
 
+    public void fillGameList () {
+
+        Call<String[]> games = ApiAdapter.getApiHandler().getGameList("Bearer " + LoginActivity.tokenAccess);
+
+        games.enqueue(new Callback<String[]>() {
+            @Override
+            public void onResponse(Call<String[]> call, Response<String[]> response) {
+
+                if ( response.isSuccessful() ) {
+                    String gameList[];
+                    gameList = response.body();
+
+                    Menu items = mNavigationView.getMenu();
+                    MenuItem element = items.getItem(1);
+                    SubMenu subMenuGames = element.getSubMenu();
+
+                    for (int i=0; i < gameList.length; i++ ) {
+                        subMenuGames.add(gameList[i].substring(0,1).toUpperCase() + gameList[i].substring(1));
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<String[]> call, Throwable t) {
+
+            }
+        });
+
+
+
+    }
+
 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int i = item.getItemId();
-        switch (i) {
-            case R.id.log_out_option:
-                drawerLayout.closeDrawers();
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                View dialogElements = getLayoutInflater().inflate(R.layout.dialog_log_out, null);
-                Button logOutButton = dialogElements.findViewById(R.id.log_out_button);
-                Button notLogOutButton = dialogElements.findViewById(R.id.not_log_out_button);
-                final AlertDialog alert;
-                mBuilder.setView(dialogElements);
-                alert = mBuilder.create();
-                alert.show();
+        Menu sub = (Menu) item.getMenuInfo();
+        Log.d("Valor: ", String.valueOf(i));
 
-                logOutButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        LoginActivity.tokenAccess = null;
-                        Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        alert.hide();
-                        alert.dismiss();
-                        finish();
-                    }
-                });
+        Menu items = mNavigationView.getMenu();
+        MenuItem element = items.getItem(1);
+        SubMenu subMenuGames = element.getSubMenu();
+        Log.d("Elemento", subMenuGames.getItem(0).getTitle().toString());
 
-                notLogOutButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alert.hide();
-                        alert.dismiss();
-                    }
-                });
+        if ( i != 0) {
+            switch (i) {
+                case R.id.log_out_option:
+                    logOut();
+                    break;
+            }
+        } else {
 
-
-                break;
         }
+
+
         return false;
     }
+
+    public void logOut() {
+        drawerLayout.closeDrawers();
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+        View dialogElements = getLayoutInflater().inflate(R.layout.dialog_log_out, null);
+        Button logOutButton = dialogElements.findViewById(R.id.log_out_button);
+        Button notLogOutButton = dialogElements.findViewById(R.id.not_log_out_button);
+        final AlertDialog alert;
+        mBuilder.setView(dialogElements);
+        alert = mBuilder.create();
+        alert.show();
+
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginActivity.tokenAccess = null;
+                Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                alert.hide();
+                alert.dismiss();
+                finish();
+            }
+        });
+
+        notLogOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert.hide();
+                alert.dismiss();
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

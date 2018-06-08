@@ -71,11 +71,13 @@ public class NewsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -84,7 +86,6 @@ public class NewsFragment extends Fragment {
        final View view = inflater.inflate(R.layout.fragment_news, container, false);
 
         fillArray(view);
-
 
         return view;
     }
@@ -110,13 +111,16 @@ public class NewsFragment extends Fragment {
                         }
 
                     }
+                    view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.GONE);
 
                     newsAdapter = new NewsAdapter(getContext(), dataNoticias);
 
                     RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
 
                     StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+
                     recyclerView.setLayoutManager(staggeredGridLayoutManager);
+
                     ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -125,6 +129,7 @@ public class NewsFragment extends Fragment {
                     recyclerView.setAdapter(newsAdapter);
 
                 }
+
             }
             @Override
             public void onFailure(Call<List<Noticia>> call, Throwable t) {

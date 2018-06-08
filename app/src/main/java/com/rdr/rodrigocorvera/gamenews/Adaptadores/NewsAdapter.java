@@ -48,6 +48,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public void onBindViewHolder(NewsViewHolder holder, final int position) { //AQUI SE PUEDE ASIGNAR EL CONTENIDO
         holder.newsTittle.setText(dataNoticias.get(position).getTitle());
         holder.newsDescription.setText(dataNoticias.get(position).getDescription());
+
         Picasso.with(context).load(dataNoticias.get(position).getCoverImage()).fit().into(holder.newsImage);
 
         final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();

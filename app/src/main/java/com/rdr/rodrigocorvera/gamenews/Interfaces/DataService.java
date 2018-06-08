@@ -39,5 +39,9 @@ public interface DataService {
     @GET("news")
     Call<List<Noticia>> getNews(@Header("Authorization") String authHeader);
 
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @GET("news/type/list")
+    Call<String[]> getGameList(@Header("Authorization") String authHeader);
+
 
 }

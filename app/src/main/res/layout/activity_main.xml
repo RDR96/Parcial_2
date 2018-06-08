@@ -15,6 +15,7 @@
         android:theme="@style/CustomActionBarTheme"
         >
 
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
