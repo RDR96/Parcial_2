@@ -28,6 +28,10 @@ import android.widget.LinearLayout;
 
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameGeneralInfoFragment;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameHolderFragment;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameImagesFragment;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameTopPlayersFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.NewsFragment;
 import com.rdr.rodrigocorvera.gamenews.Interfaces.DataService;
 import com.rdr.rodrigocorvera.gamenews.R;
@@ -38,7 +42,12 @@ import retrofit2.Response;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, NewsFragment.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+                                                               NewsFragment.OnFragmentInteractionListener,
+                                                               GameHolderFragment.OnFragmentInteractionListener,
+                                                               GameGeneralInfoFragment.OnFragmentInteractionListener,
+                                                               GameTopPlayersFragment.OnFragmentInteractionListener,
+                                                               GameImagesFragment.OnFragmentInteractionListener{
 
     DrawerLayout drawerLayout;
 
@@ -126,7 +135,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     SubMenu subMenuGames = element.getSubMenu();
 
                     for (int i=0; i < gameList.length; i++ ) {
-                        subMenuGames.add(gameList[i].substring(0,1).toUpperCase() + gameList[i].substring(1));
+                        subMenuGames.add(setUpperCase(gameList[i]));
+
                     }
                 }
 
@@ -146,27 +156,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int i = item.getItemId();
-        Menu sub = (Menu) item.getMenuInfo();
-        Log.d("Valor: ", String.valueOf(i));
 
-        Menu items = mNavigationView.getMenu();
-        MenuItem element = items.getItem(1);
-        SubMenu subMenuGames = element.getSubMenu();
-        Log.d("Elemento", subMenuGames.getItem(0).getTitle().toString());
+        int i = item.getItemId();
 
         if ( i != 0) {
+
             switch (i) {
                 case R.id.log_out_option:
                     logOut();
                     break;
             }
+
         } else {
+
+            String gameName = item.getTitle().toString().toLowerCase();
+            GameHolderFragment gameHolderFragmentFragment = GameHolderFragment.newInstance(gameName,"");
+            FrameLayout fm = findViewById(R.id.frame_section);
+            fm.removeAllViews();
+            getSupportFragmentManager().beginTransaction().add(R.id.frame_section, gameHolderFragmentFragment).commit();
 
         }
 
 
         return false;
+    }
+
+    public String setUpperCase (String text) {
+        return text.substring(0,1).toUpperCase() + text.substring(1);
     }
 
     public void logOut() {

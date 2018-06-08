@@ -11,6 +11,9 @@
     <string name="successful">Exitoso</string>
     <string name="error">Error</string>
 
+    <string name="general_info">Información</string>
+    <string name="top_players">Puntajes</string>
+    <string name="images">Imágenes</string>
 
 
     <!--Relacionado a cerrar sesión-->
