@@ -51,15 +51,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         Picasso.with(context).load(dataNoticias.get(position).getCoverImage()).fit().into(holder.newsImage);
 
-        final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-        Log.d("params", lp.toString());
 
-        if (position%3 == 0) {
-            StaggeredGridLayoutManager.LayoutParams sglp  = new StaggeredGridLayoutManager.LayoutParams(lp.width, lp.height);
-            //StaggeredGridLayoutManager.LayoutParams sglp  = (StaggeredGridLayoutManager.LayoutParams) lp;
-            sglp.setFullSpan(true);
-            holder.itemView.setLayoutParams(sglp);
-        }
 
         holder.newsImageContainer.setOnClickListener(new View.OnClickListener() {
             @Override

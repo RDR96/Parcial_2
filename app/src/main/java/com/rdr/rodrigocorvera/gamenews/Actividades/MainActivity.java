@@ -1,6 +1,7 @@
 package com.rdr.rodrigocorvera.gamenews.Actividades;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -34,6 +36,8 @@ import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameImagesFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameTopPlayersFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.NewsFragment;
 import com.rdr.rodrigocorvera.gamenews.Interfaces.DataService;
+import com.rdr.rodrigocorvera.gamenews.Interfaces.SendText;
+import com.rdr.rodrigocorvera.gamenews.Interfaces.SendText;
 import com.rdr.rodrigocorvera.gamenews.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,13 +45,15 @@ import retrofit2.Response;
 
 import java.util.List;
 import java.util.Random;
+import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
                                                                NewsFragment.OnFragmentInteractionListener,
                                                                GameHolderFragment.OnFragmentInteractionListener,
                                                                GameGeneralInfoFragment.OnFragmentInteractionListener,
                                                                GameTopPlayersFragment.OnFragmentInteractionListener,
-                                                               GameImagesFragment.OnFragmentInteractionListener{
+                                                               GameImagesFragment.OnFragmentInteractionListener,
+                                                               SendText {
 
     DrawerLayout drawerLayout;
 
@@ -65,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Random random;
 
+    FrameLayout fm;
+
+    SendText sm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void setConfiguration () {
+        sm = (SendText) this;
         random = new Random();
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
@@ -112,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void getViews() {
+
+        fm = findViewById(R.id.frame_section);
         mNavigationView= findViewById(R.id.navigation_view);
         drawerLayout = findViewById(R.id.drawer_layout);
         imageView = mNavigationView.getHeaderView(0).findViewById(R.id.header_image);
@@ -152,8 +165,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
@@ -169,11 +180,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else {
 
+            drawerLayout.closeDrawers();
             String gameName = item.getTitle().toString().toLowerCase();
-            GameHolderFragment gameHolderFragmentFragment = GameHolderFragment.newInstance(gameName,"");
-            FrameLayout fm = findViewById(R.id.frame_section);
-            fm.removeAllViews();
-            getSupportFragmentManager().beginTransaction().add(R.id.frame_section, gameHolderFragmentFragment).commit();
+            Log.d("Fragmento", getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName());
+            if (getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName().equals("GameHolderFragment")) {
+                sm.sendData(gameName);
+            } else {
+                GameHolderFragment gameHolderFragmentFragment = GameHolderFragment.newInstance(gameName,"");
+                fm.removeAllViews();
+                getSupportFragmentManager().beginTransaction().add(R.id.frame_section, gameHolderFragmentFragment).commit();
+            }
 
         }
 
@@ -246,6 +262,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+
+    @Override
+    public void sendData(String name) {
+    Log.d("","");
+        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.fragment_game_holder, null);
+
+        String tag = "android:switcher:" + view.findViewById(R.id.view_pager_games_holder).getId() + ":" + 0;
+        GameGeneralInfoFragment gameGeneralInfoFragment = (GameGeneralInfoFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        gameGeneralInfoFragment.getNewGameTitle(name);
+
+        tag = "android:switcher:" + view.findViewById(R.id.view_pager_games_holder).getId() + ":" + 1;
+        GameTopPlayersFragment gameTopPlayersFragment  = (GameTopPlayersFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        gameTopPlayersFragment.getNewGameTitle(name);
+
+        /*tag = "android:switcher:" + view.findViewById(R.id.view_pager_games_holder).getId() + ":" + 2;
+        GameImagesFragment gameImagesFragment = (GameImagesFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        gameImagesFragment.getNewGameTitle(name);*/
+    }
+
+
 }
 
 

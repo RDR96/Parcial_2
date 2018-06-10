@@ -122,7 +122,10 @@ public class LoginActivity extends AppCompatActivity {
     public void prepareForLogin() {
         View view  = this.getCurrentFocus();
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         progressBar.setVisibility(View.VISIBLE);
     }
 

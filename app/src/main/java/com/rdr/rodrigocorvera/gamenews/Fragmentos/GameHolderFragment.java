@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.rdr.rodrigocorvera.gamenews.Adaptadores.ViewPagerAdapter;
+import com.rdr.rodrigocorvera.gamenews.Interfaces.SendText;
+import com.rdr.rodrigocorvera.gamenews.MainActivity;
 import com.rdr.rodrigocorvera.gamenews.R;
 
 /**
@@ -21,7 +23,7 @@ import com.rdr.rodrigocorvera.gamenews.R;
  * Use the {@link GameHolderFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GameHolderFragment extends Fragment {
+public class GameHolderFragment extends Fragment implements SendText {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +39,7 @@ public class GameHolderFragment extends Fragment {
     private ViewPagerAdapter viewPagerAdapter;
 
     private OnFragmentInteractionListener mListener;
+
 
     public GameHolderFragment() {
         // Required empty public constructor
@@ -63,6 +66,7 @@ public class GameHolderFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -75,6 +79,7 @@ public class GameHolderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         final View view = inflater.inflate(R.layout.fragment_game_holder, container, false);
 
         tab = view.findViewById(R.id.tab_layout);
@@ -83,9 +88,9 @@ public class GameHolderFragment extends Fragment {
 
         viewPagerAdapter = new ViewPagerAdapter(getFragmentManager());
 
-        viewPagerAdapter.AddFragment(new GameGeneralInfoFragment(), getResources().getString(R.string.general_info));
-        viewPagerAdapter.AddFragment(new GameTopPlayersFragment(), getResources().getString(R.string.top_players));
-        viewPagerAdapter.AddFragment(new GameImagesFragment(), getResources().getString(R.string.images));
+        viewPagerAdapter.AddFragment(GameGeneralInfoFragment.newInstance(mParam1,""), getResources().getString(R.string.general_info));
+        viewPagerAdapter.AddFragment(GameTopPlayersFragment.newInstance(mParam1,""), getResources().getString(R.string.top_players));
+        viewPagerAdapter.AddFragment(GameImagesFragment.newInstance(mParam1,""), getResources().getString(R.string.images));
 
         viewPager.setAdapter(viewPagerAdapter);
         tab.setupWithViewPager(viewPager);
@@ -118,6 +123,23 @@ public class GameHolderFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void sendData(String name) {
+
+        String tag = "android:switcher:" + R.id.view_pager_games_holder + ":" + 0;
+        GameGeneralInfoFragment gameGeneralInfoFragment = (GameGeneralInfoFragment) getFragmentManager().findFragmentByTag(tag);
+        gameGeneralInfoFragment.getNewGameTitle(name);
+
+        tag = "android:switcher:" + R.id.view_pager_games_holder + ":" + 1;
+        GameTopPlayersFragment gameTopPlayersFragment  = (GameTopPlayersFragment) getFragmentManager().findFragmentByTag(tag);
+        gameTopPlayersFragment.getNewGameTitle(name);
+
+        tag = "android:switcher:" + R.id.view_pager_games_holder + ":" + 2;
+        GameImagesFragment gameImagesFragment = (GameImagesFragment) getFragmentManager().findFragmentByTag(tag);
+        gameImagesFragment.getNewGameTitle(name);
+
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -132,4 +154,5 @@ public class GameHolderFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }

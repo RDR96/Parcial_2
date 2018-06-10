@@ -4,11 +4,29 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
+import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.Adaptadores.NewsAdapter;
+import com.rdr.rodrigocorvera.gamenews.Adaptadores.PlayersAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.Jugador;
+import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,7 +45,9 @@ public class GameTopPlayersFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    public View view;
+    private PlayersAdapter playersAdapter;
+    private ArrayList<Jugador> dataJugador;
     private OnFragmentInteractionListener mListener;
 
     public GameTopPlayersFragment() {
@@ -65,7 +85,61 @@ public class GameTopPlayersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_game_top_players, container, false);
+        view = inflater.inflate(R.layout.fragment_game_top_players, container, false);
+
+        fillArray(view, mParam1);
+
+        return view;
+    }
+
+
+    public void fillArray (final View view, String name) {
+        dataJugador = new ArrayList<>();
+        Call<List<Jugador>> noticias = ApiAdapter.getApiHandler().getGamePlayers(name, "Bearer " + LoginActivity.tokenAccess);
+
+        noticias.enqueue(new Callback<List<Jugador>>() {
+            @Override
+            public void onResponse(Call<List<Jugador>> call, Response<List<Jugador>> response) {
+
+                if ( response.isSuccessful() ) {
+
+                    List<Jugador> gamePlayers = response.body();
+
+                    for (Jugador element : gamePlayers) {
+                        Log.d("Info", element.toString());
+                        if (element.getAvatar() != null) {
+                            dataJugador.add(element);
+                        }
+                    }
+
+
+                    view.findViewById(R.id.progress_bar_top_players).setVisibility(View.GONE);
+
+                    playersAdapter = new PlayersAdapter(getContext(), dataJugador);
+
+                    RecyclerView recyclerView = view.findViewById(R.id.players_recycler_view);
+
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                    //recyclerView.setLayoutParams(layoutParams);
+
+                    recyclerView.setAdapter(playersAdapter);
+
+                } else {
+                    Log.d("ERROR", response.errorBody().toString());
+                }
+
+            }
+            @Override
+            public void onFailure(Call<List<Jugador>> call, Throwable t) {
+                Log.d("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void getNewGameTitle (String name) {
+        fillArray(view, name);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

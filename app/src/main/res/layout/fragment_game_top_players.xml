@@ -5,9 +5,26 @@
     tools:context="com.rdr.rodrigocorvera.gamenews.Fragmentos.GameTopPlayersFragment">
 
 
-    <TextView
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:gravity="center" >
+
+        <ProgressBar
+            android:id="@+id/progress_bar_top_players"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="visible"
+            />
+    </RelativeLayout>
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/players_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
 
 </FrameLayout>

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:tag="Holder"
     tools:context="com.rdr.rodrigocorvera.gamenews.Fragmentos.GameHolderFragment">
 
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -43,6 +44,7 @@ public class NewsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
     private ArrayList<Noticia> dataNoticias;
     private NewsAdapter newsAdapter;
     private OnFragmentInteractionListener mListener;
@@ -117,14 +119,21 @@ public class NewsFragment extends Fragment {
 
                     RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
 
-                    StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
 
-                    recyclerView.setLayoutManager(staggeredGridLayoutManager);
+                    gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
+                        @Override
+                        public int getSpanSize(int position) {
 
-                    ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(new ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-                    //recyclerView.setLayoutParams(layoutParams);
+                            if ( position%3 == 0) {
+                                return 2;
+                            } else {
+                                return 1;
+                            }
+                        }
+                    });
+
+                    recyclerView.setLayoutManager(gridLayoutManager);
 
                     recyclerView.setAdapter(newsAdapter);
 

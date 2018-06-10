@@ -4,11 +4,26 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.Adaptadores.NewsAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +42,9 @@ public class GameGeneralInfoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    public View view;
+    private ArrayList<Noticia> dataNoticias;
+    private NewsAdapter newsAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,9 +82,90 @@ public class GameGeneralInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_game_general_info, container, false);
+
+        view = inflater.inflate(R.layout.fragment_game_general_info, container, false);
+
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+        fillArray(view, mParam1);
+
+        return view;
     }
+
+    public void fillArray (final View view, String name) {
+
+        dataNoticias = new ArrayList<Noticia>();
+
+        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getGameNews(name, "Bearer " + LoginActivity.tokenAccess);
+
+        noticias.enqueue(new Callback<List<Noticia>>() {
+            @Override
+            public void onResponse(Call<List<Noticia>> call, Response<List<Noticia>> response) {
+
+                if ( response.isSuccessful() ) {
+
+                    List<Noticia> allNews = response.body();
+                    if (allNews != null) {
+                        for (Noticia element : allNews) {
+
+                            if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
+                                Log.d("juego: ", element.getGame());
+                                dataNoticias.add(element);
+                            }
+
+                        }
+                    }
+
+
+                    view.findViewById(R.id.progress_bar_game_news).setVisibility(View.GONE);
+
+                    newsAdapter = new NewsAdapter(getContext(), dataNoticias);
+
+                    RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
+
+                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+
+                    gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
+                            @Override
+                                    public int getSpanSize(int position) {
+
+                                        if ( position%3 == 0) {
+                                            return 2;
+                                        } else {
+                                            return 1;
+                                        }
+                                    }
+                            });
+
+                    recyclerView.setLayoutManager(gridLayoutManager);
+                    //recyclerView.setLayoutParams(layoutParams);
+
+                    recyclerView.setAdapter(newsAdapter);
+
+                } else {
+                    Log.d("ERROR", response.errorBody().toString());
+                }
+
+            }
+            @Override
+            public void onFailure(Call<List<Noticia>> call, Throwable t) {
+             Log.d("Error", t.getMessage());
+            }
+        });
+
+    }
+
+    public void getNewGameTitle (String name) {
+        fillArray(view,name);
+        Bundle args = new Bundle();
+        getArguments().remove(ARG_PARAM1);
+        args.putString(ARG_PARAM1, name);
+        this.setArguments(args);
+    }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
