@@ -44,6 +44,7 @@ public class GameImagesFragment extends Fragment {
     private String mParam2;
     private ArrayList<Noticia> dataImagenes;
     private ImagesAdapter imagesAdapter;
+    private View view;
     private OnFragmentInteractionListener mListener;
 
     public GameImagesFragment() {
@@ -72,28 +73,27 @@ public class GameImagesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        checkArguments();
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_game_images, container, false);
+        view = inflater.inflate(R.layout.fragment_game_images, container, false);
 
-        fillArray(view);
+        checkArguments();
+
+        fillArray(view, mParam1);
 
         return view;
     }
 
-    public void fillArray (final View view) {
+    public void fillArray (final View view, String name) {
 
         dataImagenes = new ArrayList<Noticia>();
-
-        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getGameNews(mParam1, "Bearer " + LoginActivity.tokenAccess);
+        view.findViewById(R.id.progress_bar_game_images).setVisibility(View.VISIBLE);
+        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getGameNews(name, "Bearer " + LoginActivity.tokenAccess);
 
         noticias.enqueue(new Callback<List<Noticia>>() {
             @Override
@@ -141,7 +141,19 @@ public class GameImagesFragment extends Fragment {
     }
 
     public void getNewGameTitle (String name) {
+        fillArray(view, name);
+        Bundle args = new Bundle();
+        getArguments().remove(ARG_PARAM1);
+        args.putString(ARG_PARAM1, name);
+        this.setArguments(args);
+        this.setArguments(args);
+    }
 
+    public void checkArguments() {
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

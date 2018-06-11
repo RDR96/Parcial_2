@@ -73,10 +73,7 @@ public class GameGeneralInfoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        checkArguments();
     }
 
     @Override
@@ -85,10 +82,8 @@ public class GameGeneralInfoFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_game_general_info, container, false);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        checkArguments();
+
         fillArray(view, mParam1);
 
         return view;
@@ -97,6 +92,8 @@ public class GameGeneralInfoFragment extends Fragment {
     public void fillArray (final View view, String name) {
 
         dataNoticias = new ArrayList<Noticia>();
+
+        view.findViewById(R.id.progress_bar_game_news).setVisibility(View.VISIBLE);
 
         Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getGameNews(name, "Bearer " + LoginActivity.tokenAccess);
 
@@ -165,6 +162,12 @@ public class GameGeneralInfoFragment extends Fragment {
         this.setArguments(args);
     }
 
+    public void checkArguments() {
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
 
 
     // TODO: Rename method, update argument and hook method into UI event

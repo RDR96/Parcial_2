@@ -266,9 +266,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void sendData(String name) {
-    Log.d("","");
+
+
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.fragment_game_holder, null);
+
 
         String tag = "android:switcher:" + view.findViewById(R.id.view_pager_games_holder).getId() + ":" + 0;
         GameGeneralInfoFragment gameGeneralInfoFragment = (GameGeneralInfoFragment) getSupportFragmentManager().findFragmentByTag(tag);
@@ -278,9 +280,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         GameTopPlayersFragment gameTopPlayersFragment  = (GameTopPlayersFragment) getSupportFragmentManager().findFragmentByTag(tag);
         gameTopPlayersFragment.getNewGameTitle(name);
 
-        /*tag = "android:switcher:" + view.findViewById(R.id.view_pager_games_holder).getId() + ":" + 2;
+        tag = "android:switcher:" + R.id.view_pager_games_holder + ":" + 2;
         GameImagesFragment gameImagesFragment = (GameImagesFragment) getSupportFragmentManager().findFragmentByTag(tag);
-        gameImagesFragment.getNewGameTitle(name);*/
+        gameImagesFragment.getNewGameTitle(name);
     }
 
 

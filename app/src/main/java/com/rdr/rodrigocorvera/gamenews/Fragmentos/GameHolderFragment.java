@@ -95,7 +95,6 @@ public class GameHolderFragment extends Fragment implements SendText {
         viewPager.setAdapter(viewPagerAdapter);
         tab.setupWithViewPager(viewPager);
 
-
         return view;
     }
 
@@ -125,7 +124,7 @@ public class GameHolderFragment extends Fragment implements SendText {
 
     @Override
     public void sendData(String name) {
-
+        viewPager.getCurrentItem();
         String tag = "android:switcher:" + R.id.view_pager_games_holder + ":" + 0;
         GameGeneralInfoFragment gameGeneralInfoFragment = (GameGeneralInfoFragment) getFragmentManager().findFragmentByTag(tag);
         gameGeneralInfoFragment.getNewGameTitle(name);
@@ -154,5 +153,7 @@ public class GameHolderFragment extends Fragment implements SendText {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
 
 }

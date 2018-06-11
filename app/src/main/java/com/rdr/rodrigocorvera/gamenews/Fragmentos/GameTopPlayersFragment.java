@@ -95,6 +95,7 @@ public class GameTopPlayersFragment extends Fragment {
 
     public void fillArray (final View view, String name) {
         dataJugador = new ArrayList<>();
+        view.findViewById(R.id.progress_bar_top_players).setVisibility(View.VISIBLE);
         Call<List<Jugador>> noticias = ApiAdapter.getApiHandler().getGamePlayers(name, "Bearer " + LoginActivity.tokenAccess);
 
         noticias.enqueue(new Callback<List<Jugador>>() {
