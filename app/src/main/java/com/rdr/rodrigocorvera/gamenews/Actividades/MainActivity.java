@@ -123,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void getViews() {
-
         fm = findViewById(R.id.frame_section);
         mNavigationView= findViewById(R.id.navigation_view);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -173,6 +172,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if ( i != 0) {
 
             switch (i) {
+                case R.id.news_item:
+                    //getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.frame_section));
+                    getSupportFragmentManager().findFragmentById(R.id.frame_section).onDestroy();
+                    NewsFragment newsFragment = NewsFragment.newInstance("","");
+                    getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.frame_section));
+                    fm.removeAllViews();
+                    getSupportFragmentManager().beginTransaction().add(R.id.frame_section, newsFragment).commit();
+                    break;
                 case R.id.log_out_option:
                     logOut();
                     break;
@@ -186,9 +193,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName().equals("GameHolderFragment")) {
                 sm.sendData(gameName);
             } else {
-                GameHolderFragment gameHolderFragmentFragment = GameHolderFragment.newInstance(gameName,"");
+                GameHolderFragment gameHolderFragment = GameHolderFragment.newInstance(gameName,"");
                 fm.removeAllViews();
-                getSupportFragmentManager().beginTransaction().add(R.id.frame_section, gameHolderFragmentFragment).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.frame_section, gameHolderFragment).commit();
             }
 
         }

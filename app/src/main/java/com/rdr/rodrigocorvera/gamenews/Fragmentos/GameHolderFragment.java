@@ -91,7 +91,6 @@ public class GameHolderFragment extends Fragment implements SendText {
         viewPagerAdapter.AddFragment(GameGeneralInfoFragment.newInstance(mParam1,""), getResources().getString(R.string.general_info));
         viewPagerAdapter.AddFragment(GameTopPlayersFragment.newInstance(mParam1,""), getResources().getString(R.string.top_players));
         viewPagerAdapter.AddFragment(GameImagesFragment.newInstance(mParam1,""), getResources().getString(R.string.images));
-
         viewPager.setAdapter(viewPagerAdapter);
         tab.setupWithViewPager(viewPager);
 
@@ -120,6 +119,15 @@ public class GameHolderFragment extends Fragment implements SendText {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        viewPager.setAdapter(null);
+        getFragmentManager().beginTransaction().remove(viewPagerAdapter.getItem(0));
+        getFragmentManager().beginTransaction().remove(viewPagerAdapter.getItem(1));
+        getFragmentManager().beginTransaction().remove(viewPagerAdapter.getItem(2));
     }
 
     @Override

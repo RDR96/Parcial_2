@@ -45,6 +45,7 @@ public class GameGeneralInfoFragment extends Fragment {
     public View view;
     private ArrayList<Noticia> dataNoticias;
     private NewsAdapter newsAdapter;
+    private static Bundle args;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,7 +64,7 @@ public class GameGeneralInfoFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static GameGeneralInfoFragment newInstance(String param1, String param2) {
         GameGeneralInfoFragment fragment = new GameGeneralInfoFragment();
-        Bundle args = new Bundle();
+        args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
@@ -156,16 +157,15 @@ public class GameGeneralInfoFragment extends Fragment {
 
     public void getNewGameTitle (String name) {
         fillArray(view,name);
-        Bundle args = new Bundle();
-        getArguments().remove(ARG_PARAM1);
+        args.remove(ARG_PARAM1);
         args.putString(ARG_PARAM1, name);
         this.setArguments(args);
     }
 
     public void checkArguments() {
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam1 = args.getString(ARG_PARAM1);
+            mParam2 = args.getString(ARG_PARAM2);
         }
     }
 
@@ -193,6 +193,17 @@ public class GameGeneralInfoFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     /**

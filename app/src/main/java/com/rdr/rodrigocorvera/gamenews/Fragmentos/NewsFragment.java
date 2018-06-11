@@ -95,7 +95,7 @@ public class NewsFragment extends Fragment {
     public void fillArray (final View view) {
 
         dataNoticias = new ArrayList<Noticia>();
-
+        view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.VISIBLE);
         Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
 
         noticias.enqueue(new Callback<List<Noticia>>() {

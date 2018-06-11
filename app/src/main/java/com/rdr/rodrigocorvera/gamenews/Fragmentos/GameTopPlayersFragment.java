@@ -49,7 +49,7 @@ public class GameTopPlayersFragment extends Fragment {
     private PlayersAdapter playersAdapter;
     private ArrayList<Jugador> dataJugador;
     private OnFragmentInteractionListener mListener;
-
+    private static Bundle args;
     public GameTopPlayersFragment() {
         // Required empty public constructor
     }
@@ -65,7 +65,7 @@ public class GameTopPlayersFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static GameTopPlayersFragment newInstance(String param1, String param2) {
         GameTopPlayersFragment fragment = new GameTopPlayersFragment();
-        Bundle args = new Bundle();
+        args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
@@ -75,10 +75,12 @@ public class GameTopPlayersFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -86,6 +88,12 @@ public class GameTopPlayersFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_game_top_players, container, false);
+
+        if (getArguments() != null) {
+            mParam1 = args.getString(ARG_PARAM1);
+            mParam2 = args.getString(ARG_PARAM2);
+        }
+
 
         fillArray(view, mParam1);
 
@@ -141,6 +149,9 @@ public class GameTopPlayersFragment extends Fragment {
 
     public void getNewGameTitle (String name) {
         fillArray(view, name);
+        args.remove(ARG_PARAM1);
+        args.putString(ARG_PARAM1, name);
+        setArguments(args);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

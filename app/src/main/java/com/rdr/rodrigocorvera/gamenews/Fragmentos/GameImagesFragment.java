@@ -46,6 +46,7 @@ public class GameImagesFragment extends Fragment {
     private ImagesAdapter imagesAdapter;
     private View view;
     private OnFragmentInteractionListener mListener;
+    private static Bundle args;
 
     public GameImagesFragment() {
         // Required empty public constructor
@@ -62,7 +63,7 @@ public class GameImagesFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static GameImagesFragment newInstance(String param1, String param2) {
         GameImagesFragment fragment = new GameImagesFragment();
-        Bundle args = new Bundle();
+        args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
@@ -142,17 +143,15 @@ public class GameImagesFragment extends Fragment {
 
     public void getNewGameTitle (String name) {
         fillArray(view, name);
-        Bundle args = new Bundle();
-        getArguments().remove(ARG_PARAM1);
+        args.remove(ARG_PARAM1);
         args.putString(ARG_PARAM1, name);
-        this.setArguments(args);
-        this.setArguments(args);
+        setArguments(args);
     }
 
     public void checkArguments() {
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam1 = args.getString(ARG_PARAM1);
+            mParam2 = args.getString(ARG_PARAM2);
         }
     }
 
