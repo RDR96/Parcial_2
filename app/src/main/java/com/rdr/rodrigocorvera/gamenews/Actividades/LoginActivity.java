@@ -13,8 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdr.rodrigocorvera.gamenews.Clases.CurrentUser;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
-import com.rdr.rodrigocorvera.gamenews.Clases.Usuario;
+import com.rdr.rodrigocorvera.gamenews.Clases.Token;
 import com.rdr.rodrigocorvera.gamenews.R;
 
 import org.json.JSONException;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText textFieldPassword;
     ProgressBar progressBar;
     public static String tokenAccess = null;
+    public static CurrentUser currentUser = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if ( !textFieldName.getText().toString().equals("") && !textFieldPassword.getText().toString().equals("") ) {
                     checkLogIn(textFieldName.getText().toString(), textFieldPassword.getText().toString());
+
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.fill_fields, Toast.LENGTH_SHORT).show();
                 }
@@ -74,36 +77,36 @@ public class LoginActivity extends AppCompatActivity {
 
     public void checkLogIn (String user, String password) {
 
-        Call<Usuario> logInResponse = ApiAdapter.getApiHandler().get_token(user, password);
+        Call<Token> logInResponse = ApiAdapter.getApiHandler().get_token(user, password);
         prepareForLogin();
-        logInResponse.enqueue(new Callback<Usuario>() {
+        logInResponse.enqueue(new Callback<Token>() {
             @Override
-            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+            public void onResponse(Call<Token> call, Response<Token> response) {
 
                 if ( response.isSuccessful() ) {
-                    try{
+                    //try{
 
-                        String json = response.body().toString();
+                        Token token = response.body();
 
                         JSONObject data = null;
-                        data = new JSONObject(json);
-                        tokenAccess = data.getString("token");
+                        //data = new JSONObject(json);
+                        tokenAccess = token.getToken();
                         Log.d("token", tokenAccess);
                         if ( !tokenAccess.equals("null")) {
+                            getCurrentUser();
                             progressBar.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, R.string.successful, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
-
                             finish();
 
                         } else {
 
                             Toast.makeText(LoginActivity.this, R.string.wrong_data_type, Toast.LENGTH_SHORT).show();
                         }
-                    } catch (JSONException e) {
-                        Log.d("Error: ", e.getMessage());
-                    }
+                  //  } catch (JSONException e) {
+                        //Log.d("Error: ", e.getMessage());
+                    //}
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.wrong_data_type, Toast.LENGTH_SHORT).show();
                 }
@@ -111,12 +114,31 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Usuario> call, Throwable t) {
+            public void onFailure(Call<Token> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(LoginActivity.this, R.string.log_in_error, Toast.LENGTH_SHORT).show();
             }
         });
 
+    }
+
+    public void getCurrentUser () {
+        final Call<CurrentUser> logInResponse = ApiAdapter.getApiHandler().getCurrentUser("Bearer "+ tokenAccess);
+        logInResponse.enqueue(new Callback<CurrentUser>() {
+            @Override
+            public void onResponse(Call<CurrentUser> call, Response<CurrentUser> response) {
+                if ( response.isSuccessful() ) {
+                    currentUser = response.body();
+                    Log.d("Usuario", currentUser.toString());
+                    int i;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CurrentUser> call, Throwable t) {
+
+            }
+        });
     }
 
     public void prepareForLogin() {

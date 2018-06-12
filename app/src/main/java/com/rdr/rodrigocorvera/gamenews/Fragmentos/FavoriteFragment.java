@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,16 +26,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewsFragment.OnFragmentInteractionListener} interface
+ * {@link FavoriteFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewsFragment#newInstance} factory method to
+ * Use the {@link FavoriteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends Fragment {
+public class FavoriteFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -45,12 +43,10 @@ public class NewsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    private ArrayList<Noticia> dataNoticias;
     private NewsAdapter newsAdapter;
     private OnFragmentInteractionListener mListener;
 
-    public NewsFragment() {
+    public FavoriteFragment() {
         // Required empty public constructor
     }
 
@@ -60,11 +56,11 @@ public class NewsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NewsFragment.
+     * @return A new instance of fragment FavoriteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewsFragment newInstance(String param1, String param2) {
-        NewsFragment fragment = new NewsFragment();
+    public static FavoriteFragment newInstance(String param1, String param2) {
+        FavoriteFragment fragment = new FavoriteFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -86,21 +82,17 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       final View view = inflater.inflate(R.layout.fragment_news, container, false);
 
+        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
 
-        fillArray(view);
-
+        getFavorites(view);
 
         return view;
     }
 
-    public void fillArray (final View view) {
+    public void getFavorites (final View view) {
 
-        dataNoticias = new ArrayList<Noticia>();
-
-        view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.VISIBLE);
-
+        view.findViewById(R.id.progress_bar_favorite_activity).setVisibility(View.VISIBLE);
         Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
 
         noticias.enqueue(new Callback<List<Noticia>>() {
@@ -110,17 +102,7 @@ public class NewsFragment extends Fragment {
                 if ( response.isSuccessful() ) {
 
                     List<Noticia> allNews = response.body();
-
-                    for (Noticia element : allNews) {
-                        if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
-                            dataNoticias.add(element);
-                        }
-                    }
-
-                    checkIfFavorite(dataNoticias, view);
-
-
-
+                    fillArray(view, allNews);
                 }
 
             }
@@ -133,7 +115,8 @@ public class NewsFragment extends Fragment {
 
     }
 
-    public void checkIfFavorite (final ArrayList<Noticia> noticias, final View view) {
+    public void fillArray (final View view, final List<Noticia> allNews) {
+
 
         Call<CurrentUser> logInResponse = ApiAdapter.getApiHandler().getCurrentUser("Bearer "+ LoginActivity.tokenAccess);
 
@@ -147,44 +130,23 @@ public class NewsFragment extends Fragment {
                     ArrayList<Noticia> favoritesNews = (ArrayList<Noticia>) idNews;
 
                     for ( int i = 0; i < favoritesNews.size(); i++) {
-                        for (int j = 0; j < dataNoticias.size(); j++) {
-                            if (favoritesNews.get(i).get_id().equals(noticias.get(j).get_id())) {
-                                dataNoticias.get(j).setFavorite(true);
-                            }
-                        }
+                        favoritesNews.get(i).setFavorite(true);
                     }
 
-                    int counter = 0;
-                    for (int i = 0; i < dataNoticias.size(); i++) {
-                        if (dataNoticias.get(i).isFavorite()) {
-                            counter++;
-                        }
-                    }
-                    Log.d("favoritos", String.valueOf(counter));
+                    view.findViewById(R.id.progress_bar_favorite_activity).setVisibility(View.GONE);
 
-                    view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.GONE);
+                    newsAdapter = new NewsAdapter(getContext(), favoritesNews, true);
 
-                    newsAdapter = new NewsAdapter(getContext(), dataNoticias, false);
+                    RecyclerView recyclerView = view.findViewById(R.id.favorite_recycler_view);
 
-                    RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
-                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-
-                    gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
-                        @Override
-                        public int getSpanSize(int position) {
-
-                            if ( position%3 == 0) {
-                                return 2;
-                            } else {
-                                return 1;
-                            }
-                        }
-                    });
-
-                    recyclerView.setLayoutManager(gridLayoutManager);
+                    recyclerView.setLayoutManager(linearLayoutManager);
 
                     recyclerView.setAdapter(newsAdapter);
+
+
+
                 }
             }
 
@@ -195,6 +157,7 @@ public class NewsFragment extends Fragment {
         });
 
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

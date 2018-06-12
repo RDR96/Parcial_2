@@ -25,6 +25,7 @@
         <activity android:name=".Actividades.RegisterActivity" />
         <activity android:name=".Actividades.MainActivity" />
         <activity android:name=".Actividades.InfoNewsActivity" />
+        <activity android:name=".Actividades.FavoriteActivity"></activity>
     </application>
 
 </manifest>

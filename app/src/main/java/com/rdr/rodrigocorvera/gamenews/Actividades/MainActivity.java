@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.FavoriteFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameGeneralInfoFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameHolderFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameImagesFragment;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                                                GameGeneralInfoFragment.OnFragmentInteractionListener,
                                                                GameTopPlayersFragment.OnFragmentInteractionListener,
                                                                GameImagesFragment.OnFragmentInteractionListener,
+                                                               FavoriteFragment.OnFragmentInteractionListener,
                                                                SendText {
 
     DrawerLayout drawerLayout;
@@ -102,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 imageView.setImageDrawable(images.getDrawable(getRandomValue(images.length())));
-
             }
 
         };
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<String[]> call, Response<String[]> response) {
 
                 if ( response.isSuccessful() ) {
+
                     String gameList[];
                     gameList = response.body();
 
@@ -179,6 +181,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.frame_section));
                     fm.removeAllViews();
                     getSupportFragmentManager().beginTransaction().add(R.id.frame_section, newsFragment).commit();
+                    break;
+
+                case R.id.favorite_option:
+                        Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                        startActivity(intent);
                     break;
                 case R.id.log_out_option:
                     logOut();

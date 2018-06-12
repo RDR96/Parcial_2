@@ -119,7 +119,7 @@ public class GameGeneralInfoFragment extends Fragment {
 
                     view.findViewById(R.id.progress_bar_game_news).setVisibility(View.GONE);
 
-                    newsAdapter = new NewsAdapter(getContext(), dataNoticias);
+                    newsAdapter = new NewsAdapter(getContext(), dataNoticias, false);
 
                     RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
 

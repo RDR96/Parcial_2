@@ -1,7 +1,5 @@
 package com.rdr.rodrigocorvera.gamenews.Clases;
 
-
-//import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,39 +8,21 @@ import java.util.List;
  * Created by Rodrigo Corvera on 3/6/2018.
  */
 
-public class Usuario {
+public class CurrentUser {
 
-    private List<Object> favoriteNews;
-    private String _id;
-    private String user;
-    private String avatar;
-    private String password;
-    private Date created_date;
-    private int __v;
-    private String token;
-    private String message;
+    public List<Noticia> favoriteNews;
+    public String _id;
+    public String user;
+    public String avatar;
+    public String password;
+    public Date created_date;
+    public int __v;
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public List<Object> getFavoriteNews() {
+    public List<Noticia> getFavoriteNews() {
         return favoriteNews;
     }
 
-    public void setFavoriteNews(List<Object> favoriteNews) {
+    public void setFavoriteNews(List<Noticia> favoriteNews) {
         this.favoriteNews = favoriteNews;
     }
 
@@ -96,16 +76,14 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "{" +
-                "favoriteNews:" + favoriteNews +
-                ", _id:'" + _id + '\'' +
-                ", user:'" + user + '\'' +
-                ", avatar:'" + avatar + '\'' +
-                ", password:'" + password + '\'' +
-                ", created_date:" + created_date +
-                ", __v:" + __v +
-                ", token:'" + token + '\'' +
-                ", message:'" + message + '\'' +
+        return "CurrentUser{" +
+                "favoriteNews=" + favoriteNews +
+                ", _id='" + _id + '\'' +
+                ", user='" + user + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", password='" + password + '\'' +
+                ", created_date=" + created_date +
+                ", __v=" + __v +
                 '}';
     }
 }

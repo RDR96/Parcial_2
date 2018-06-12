@@ -7,15 +7,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
-import com.rdr.rodrigocorvera.gamenews.Clases.Usuario;
+import com.rdr.rodrigocorvera.gamenews.Clases.Token;
 import com.rdr.rodrigocorvera.gamenews.R;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -50,13 +48,13 @@ public class RegisterActivity extends AppCompatActivity {
                         String url = "";
                         String password = textFieldPassword.getText().toString();
 
-                        Call<Usuario> usuarioResponse = ApiAdapter.getApiHandler().insert_user(user, url, password, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjBmNDE1NjdkMjZmZDAwMjBmNjMyN2IiLCJpYXQiOjE1Mjc4OTk3MDIsImV4cCI6MTUyOTEwOTMwMn0.R7ieieRpNkRUT-YhwQccDecuohilo12hN0i2AaafS2Q");
+                        Call<Token> usuarioResponse = ApiAdapter.getApiHandler().insert_user(user, url, password, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1YjBmNDE1NjdkMjZmZDAwMjBmNjMyN2IiLCJpYXQiOjE1Mjc4OTk3MDIsImV4cCI6MTUyOTEwOTMwMn0.R7ieieRpNkRUT-YhwQccDecuohilo12hN0i2AaafS2Q");
 
-                        usuarioResponse.enqueue(new Callback<Usuario>() {
+                        usuarioResponse.enqueue(new Callback<Token>() {
                             @Override
-                            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                            public void onResponse(Call<Token> call, Response<Token> response) {
                                 if (response.isSuccessful() ) {
-                                    Usuario usuario1 = response.body();
+                                    Token usuario1 = response.body();
                                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                     finish();
                                 } else {
@@ -65,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(Call<Usuario> call, Throwable t) {
+                            public void onFailure(Call<Token> call, Throwable t) {
                                 Toast.makeText(RegisterActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
                             }
                         });

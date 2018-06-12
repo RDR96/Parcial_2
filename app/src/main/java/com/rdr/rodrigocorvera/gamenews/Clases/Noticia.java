@@ -2,6 +2,8 @@ package com.rdr.rodrigocorvera.gamenews.Clases;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 /**
  * Created by Rodrigo Corvera on 4/6/2018.
  */
@@ -14,10 +16,18 @@ public class Noticia {
     private String game;
     private String coverImage;
     private String description;
-    private String created_date;
+    private Date created_date;
     private int __v;
+    private boolean isFavorite;
 
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 
     public String get_id() {
         return _id;
@@ -67,11 +77,11 @@ public class Noticia {
         this.description = description;
     }
 
-    public String getCreated_date() {
+    public Date getCreated_date() {
         return created_date;
     }
 
-    public void setCreated_date(String created_date) {
+    public void setCreated_date(Date created_date) {
         this.created_date = created_date;
     }
 
