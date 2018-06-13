@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
+import com.rdr.rodrigocorvera.gamenews.Clases.UserInfo;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.FavoriteFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameGeneralInfoFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameHolderFragment;
@@ -76,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FrameLayout fm;
 
     SendText sm;
+
+    Intent intent;
+
+    public static UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,9 +189,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
 
                 case R.id.favorite_option:
-                        Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                        intent = new Intent(MainActivity.this, FavoriteActivity.class);
                         startActivity(intent);
                     break;
+
+                case R.id.settings_option:
+                         intent = new Intent(MainActivity.this, ConfigurationActivity.class);
+                         startActivity(intent);
+                    break;
+
                 case R.id.log_out_option:
                     logOut();
                     break;
@@ -197,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawerLayout.closeDrawers();
             String gameName = item.getTitle().toString().toLowerCase();
             Log.d("Fragmento", getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName());
+
             if (getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName().equals("GameHolderFragment")) {
                 sm.sendData(gameName);
             } else {

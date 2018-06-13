@@ -4,5 +4,9 @@
         <item>@drawable/counter</item>
         <item>@drawable/link</item>
         <item>@drawable/sonic</item>
+        <item>@drawable/mario</item>
+        <item>@drawable/pika</item>
+        <item>@drawable/acred</item>
+        <item>@drawable/gwar</item>
     </array>
 </resources>

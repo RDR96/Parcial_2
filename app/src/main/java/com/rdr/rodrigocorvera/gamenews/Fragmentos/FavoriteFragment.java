@@ -145,8 +145,6 @@ public class FavoriteFragment extends Fragment {
 
                     recyclerView.setAdapter(newsAdapter);
 
-
-
                 }
             }
 

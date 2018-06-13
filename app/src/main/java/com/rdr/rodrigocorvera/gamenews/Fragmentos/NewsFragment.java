@@ -45,7 +45,7 @@ public class NewsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    static View view;
     private ArrayList<Noticia> dataNoticias;
     private NewsAdapter newsAdapter;
     private OnFragmentInteractionListener mListener;
@@ -86,16 +86,15 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       final View view = inflater.inflate(R.layout.fragment_news, container, false);
 
+        view = inflater.inflate(R.layout.fragment_news, container, false);
 
-        fillArray(view);
-
+        fillArray();
 
         return view;
     }
 
-    public void fillArray (final View view) {
+    public void fillArray () {
 
         dataNoticias = new ArrayList<Noticia>();
 
@@ -116,11 +115,7 @@ public class NewsFragment extends Fragment {
                             dataNoticias.add(element);
                         }
                     }
-
                     checkIfFavorite(dataNoticias, view);
-
-
-
                 }
 
             }
@@ -179,6 +174,7 @@ public class NewsFragment extends Fragment {
                             } else {
                                 return 1;
                             }
+
                         }
                     });
 

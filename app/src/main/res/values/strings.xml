@@ -5,12 +5,25 @@
     <string name="close">Cerrar</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
-    <string name="settings">Ajustes</string>
     <string name="favorites">Favoritos</string>
     <string name="options">Opciones</string>
     <string name="successful">Exitoso</string>
     <string name="error">Error</string>
+    <string name="settings">Ajustes</string>
+    <string name="account">Cuenta</string>
+    <string name="current_user">Usuario actual</string>
+    <string name="new_name">Nuevo nombre</string>
+    <string name="new_password">Nueva contraseña</string>
+    <string name="layout_options">Opciones de vista</string>
+    <string name="update">Actualizar</string>
+    <string name="fill_some_field">Rellene algún campo</string>
+    <string name="change_successful">Cambios hecho</string>
+    <string name="tap_again">Toque otra vez</string>
+    <string name="tap_twice">Toque dos veces</string>
+    <string name="cancel">Cancelar</string>
+
     <string name="favorite_success">Agregado a favoritos</string>
+
 
     <string name="general_info">Información</string>
     <string name="top_players">Puntajes</string>

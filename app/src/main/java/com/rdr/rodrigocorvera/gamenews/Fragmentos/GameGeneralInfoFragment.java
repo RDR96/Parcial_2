@@ -107,7 +107,6 @@ public class GameGeneralInfoFragment extends Fragment {
                     List<Noticia> allNews = response.body();
                     if (allNews != null) {
                         for (Noticia element : allNews) {
-
                             if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
                                 Log.d("juego: ", element.getGame());
                                 dataNoticias.add(element);

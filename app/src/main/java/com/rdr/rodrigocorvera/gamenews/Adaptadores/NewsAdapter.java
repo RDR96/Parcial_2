@@ -1,5 +1,6 @@
 package com.rdr.rodrigocorvera.gamenews.Adaptadores;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import com.rdr.rodrigocorvera.gamenews.Clases.MessageHandler;
 import com.rdr.rodrigocorvera.gamenews.Clases.NewsFavoriteRoot;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.FavoriteFragment;
+import com.rdr.rodrigocorvera.gamenews.Fragmentos.NewsFragment;
 import com.rdr.rodrigocorvera.gamenews.R;
 import com.squareup.picasso.Picasso;
 
@@ -51,7 +53,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         View v = inflater.inflate(R.layout.cardview_noticias, null);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         v.setLayoutParams(lp);
-
         return new NewsViewHolder(v,context.getApplicationContext(), dataNoticias);
     }
 
@@ -72,28 +73,22 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         holder.newsImageContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, InfoNewsActivity.class);
-                intent.setAction(intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, dataNoticias.get(position).getTitle() + "/-"+
-                                dataNoticias.get(position).getCoverImage()+ "/-" +
-                                dataNoticias.get(position).getDescription()+ "/-" +
-                                dataNoticias.get(position).getBody());
-                context.startActivity(intent);
+                if (dataNoticias.get(position).isFavorite()) {
+                    sendIntent(position, "isFavorite");
+                } else {
+                    sendIntent(position, "isnotFavorite");
+                }
             }
         });
 
         holder.newsInfoContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, InfoNewsActivity.class);
-                intent.setAction(intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, dataNoticias.get(position).getTitle() + "/-"+
-                        dataNoticias.get(position).getCoverImage()+ "/-" +
-                        dataNoticias.get(position).getDescription()+ "/-" +
-                        dataNoticias.get(position).getBody());
-                context.startActivity(intent);
+                if (dataNoticias.get(position).isFavorite()) {
+                    sendIntent(position, "isFavorite");
+                } else {
+                    sendIntent(position, "isnotFavorite");
+                }
             }
         });
 
@@ -103,7 +98,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 if ( dataNoticias.get(position).isFavorite() ) {
                     removeFavorite(position, holder);
                 } else {
-                    addFavorite(position);
+                    addFavorite(position, holder);
                 }
             }// Aqui termina la llamada
 
@@ -112,7 +107,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         });
     }
 
-    public void addFavorite(int position) {
+    public void addFavorite(final int position, final NewsViewHolder holder) {
         Call<NewsFavoriteRoot> newsFavoriteRootCall = ApiAdapter.getApiHandler().setFavoriteNews(
                 LoginActivity.currentUser.get_id(),
                 dataNoticias.get(position).get_id(),
@@ -123,6 +118,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 if ( response.isSuccessful() ) {
                     NewsFavoriteRoot favoriteNew = response.body();
                     if ( favoriteNew.getSuccess().equals("true") ) {
+                        dataNoticias.get(position).setFavorite(true);
+                        holder.favoriteButton.setImageResource(R.drawable.ic_star_border_24dp);
                         Toast.makeText(context, R.string.favorite_success , Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -152,6 +149,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                             dataNoticias.remove(position);
                             notifyDataSetChanged();
                         } else {
+                            dataNoticias.get(position).setFavorite(false);
                             holder.favoriteButton.setImageResource(R.drawable.ic_star_border_24dp);
                         }
                     }
@@ -166,6 +164,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             }
         });
 
+    }
+
+    public void sendIntent (int position, String isFavoriteText) {
+        Intent intent = new Intent(context, InfoNewsActivity.class);
+        intent.setAction(intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, dataNoticias.get(position).getTitle() + "/-"+
+                dataNoticias.get(position).getCoverImage()+ "/-" +
+                dataNoticias.get(position).getDescription()+ "/-" +
+                dataNoticias.get(position).getBody()+ "/-" +
+                isFavoriteText + "/-" +
+                dataNoticias.get(position).get_id());
+        context.startActivity(intent);
     }
 
     @Override

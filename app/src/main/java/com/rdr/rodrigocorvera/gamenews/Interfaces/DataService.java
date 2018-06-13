@@ -6,10 +6,12 @@ import com.rdr.rodrigocorvera.gamenews.Clases.MessageHandler;
 import com.rdr.rodrigocorvera.gamenews.Clases.NewsFavoriteRoot;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.Clases.Token;
+import com.rdr.rodrigocorvera.gamenews.Clases.UserInfo;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -18,6 +20,7 @@ import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -79,6 +82,23 @@ public interface DataService {
     Call<MessageHandler> deleteFavoriteNews(@Field("new") String newId,
                                             @Path("user_id") String id,
                                             @Header("Authorization") String authHeader);
+
+    @FormUrlEncoded
+    @PUT("users/{id}")
+    Call<UserInfo> updateAllInfo(@Path("id") String id,
+                                 @Field("user") String name,
+                                 @Field("password") String password,
+                                 @Header("Authorization") String authHeader);
+    @FormUrlEncoded
+    @PUT("users/{id}")
+    Call<UserInfo> updateName(@Path("id") String id,
+                              @Field("user") String name,
+                              @Header("Authorization") String authHeader);
+    @FormUrlEncoded
+    @PUT("users/{id}")
+    Call<UserInfo> updatePassword(@Path("id") String id,
+                                     @Field("password") String password,
+                                     @Header("Authorization") String authHeader);
 
 
 
