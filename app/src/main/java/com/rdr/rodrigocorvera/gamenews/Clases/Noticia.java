@@ -16,7 +16,7 @@ public class Noticia {
     private String game;
     private String coverImage;
     private String description;
-    private Date created_date;
+    private String created_date;
     private int __v;
     private boolean isFavorite;
 
@@ -77,11 +77,11 @@ public class Noticia {
         this.description = description;
     }
 
-    public Date getCreated_date() {
+    public String getCreated_date() {
         return created_date;
     }
 
-    public void setCreated_date(Date created_date) {
+    public void setCreated_date(String created_date) {
         this.created_date = created_date;
     }
 

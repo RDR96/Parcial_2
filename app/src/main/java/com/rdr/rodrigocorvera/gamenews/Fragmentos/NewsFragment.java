@@ -1,24 +1,32 @@
 package com.rdr.rodrigocorvera.gamenews.Fragmentos;
 
+import android.arch.lifecycle.LifecycleFragment;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.Actividades.MainActivity;
 import com.rdr.rodrigocorvera.gamenews.Adaptadores.NewsAdapter;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.AppDatabase;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.News;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Repositorios.NoticiasRepositorio;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.CurrentUser;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
+import com.rdr.rodrigocorvera.gamenews.Utilidades.InjectorUtils;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.NewsFragmentViewModel;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.NewsViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +44,7 @@ import retrofit2.Response;
  * Use the {@link NewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends Fragment {
+public class NewsFragment extends LifecycleFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -46,9 +54,12 @@ public class NewsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     static View view;
+    NewsFragmentViewModel myViewModel;
     private ArrayList<Noticia> dataNoticias;
     private NewsAdapter newsAdapter;
     private OnFragmentInteractionListener mListener;
+    private ProgressBar progressBar;
+    Thread thread;
 
     public NewsFragment() {
         // Required empty public constructor
@@ -74,27 +85,34 @@ public class NewsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_news, container, false);
+        NoticiasRepositorio.changeValues("",0);
+        NewsViewModelFactory factory = InjectorUtils.provideNewsViewModelFactory(MainActivity.contextGlobal,"",0);
 
-        fillArray();
+        myViewModel = ViewModelProviders.of(this, factory).get(NewsFragmentViewModel.class);
 
+        myViewModel.getNoticia().observe(this, noticia -> {
+            progressBar.setVisibility(View.VISIBLE);
+            updateNews(noticia);
+        });
+        InjectorUtils.provideRepository(getContext(),"",0);
+        progressBar = view.findViewById(R.id.progress_bar_main_activity);
         return view;
     }
 
-    public void fillArray () {
+    /*public void fillArray () {
 
         dataNoticias = new ArrayList<Noticia>();
 
@@ -124,42 +142,34 @@ public class NewsFragment extends Fragment {
 
             }
         });
+    }*/
 
+    public void updateNews(List<News> noticia) {
+
+        ArrayList<News>  nuevasnuveas= (ArrayList) noticia;
+
+        checkIfFavorite(nuevasnuveas);
 
     }
 
-    public void checkIfFavorite (final ArrayList<Noticia> noticias, final View view) {
-
+    void checkIfFavorite (ArrayList<News> news) {
         Call<CurrentUser> logInResponse = ApiAdapter.getApiHandler().getCurrentUser("Bearer "+ LoginActivity.tokenAccess);
 
         logInResponse.enqueue(new Callback<CurrentUser>() {
             @Override
             public void onResponse(Call<CurrentUser> call, Response<CurrentUser> response) {
                 if ( response.isSuccessful() ) {
-
                     CurrentUser currentUser = response.body();
-                    List<Noticia> idNews = currentUser.getFavoriteNews();
-                    ArrayList<Noticia> favoritesNews = (ArrayList<Noticia>) idNews;
-
-                    for ( int i = 0; i < favoritesNews.size(); i++) {
-                        for (int j = 0; j < dataNoticias.size(); j++) {
-                            if (favoritesNews.get(i).get_id().equals(noticias.get(j).get_id())) {
-                                dataNoticias.get(j).setFavorite(true);
+                    List<String> idNews = currentUser.getFavoriteNews();
+                    ArrayList<String> favoritesNews = (ArrayList<String>) idNews;
+                    for (int i = 0; i < idNews.size(); i++) {
+                        for (int j = 0; j < news.size(); j++) {
+                            if (idNews.get(i).equals(news.get(j).getId())) {
+                                news.get(j).setIsFavorite(1);
                             }
                         }
                     }
-
-                    int counter = 0;
-                    for (int i = 0; i < dataNoticias.size(); i++) {
-                        if (dataNoticias.get(i).isFavorite()) {
-                            counter++;
-                        }
-                    }
-                    Log.d("favoritos", String.valueOf(counter));
-
-                    view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.GONE);
-
-                    newsAdapter = new NewsAdapter(getContext(), dataNoticias, false);
+                    newsAdapter = new NewsAdapter(getContext(), news, false);
 
                     RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
 
@@ -179,8 +189,97 @@ public class NewsFragment extends Fragment {
                     });
 
                     recyclerView.setLayoutManager(gridLayoutManager);
-
+                    progressBar.setVisibility(View.GONE);
                     recyclerView.setAdapter(newsAdapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CurrentUser> call, Throwable t) {
+            }
+        });
+
+    }
+
+
+    /*public void checkIfFavorite (final ArrayList<Noticia> noticias, final View view) {
+
+        Call<CurrentUser> logInResponse = ApiAdapter.getApiHandler().getCurrentUser("Bearer "+ LoginActivity.tokenAccess);
+
+        logInResponse.enqueue(new Callback<CurrentUser>() {
+            @Override
+            public void onResponse(Call<CurrentUser> call,final Response<CurrentUser> response) {
+                if ( response.isSuccessful() ) {
+                    thread = new Thread(){
+                        public void run(){
+
+                            AppDatabase appDatabase = AppDatabase.getDatabaseInstance(getContext());
+                            appDatabase.favoritesDao().deleteAllFavorites();
+                            appDatabase.newsDao().deleteNews();
+
+                            CurrentUser currentUser = response.body();
+                            List<String> idNews = currentUser.getFavoriteNews();
+                            ArrayList<String> favoritesNews = (ArrayList<String>) idNews;
+
+                            for ( int i = 0; i < favoritesNews.size(); i++) {
+                                for (int j = 0; j < dataNoticias.size(); j++) {
+                                    if (i == 0) {
+                                        News news = new News(dataNoticias.get(j).get_id(),
+                                                             dataNoticias.get(j).getTitle(),
+                                                             dataNoticias.get(j).getBody(),
+                                                             dataNoticias.get(j).getGame(),
+                                                             dataNoticias.get(j).getCoverImage(),
+                                                             dataNoticias.get(j).getDescription(),
+                                                             dataNoticias.get(j).getCreated_date(),
+                                                             dataNoticias.get(j).get__v());
+                                        appDatabase.newsDao().addNews(news);
+                                    }
+                                    if (favoritesNews.get(i).equals(noticias.get(j).get_id())) {
+                                        Favorites favorites = new Favorites(currentUser.get_id(), dataNoticias.get(j).get_id());
+                                        dataNoticias.get(j).setFavorite(true);
+                                    }
+
+                                }
+                            }
+                            List<News> listaNoticias = appDatabase.newsDao().getAllNews();
+
+                            int counter = 0;
+                            for (int i = 0; i < listaNoticias.size(); i++) {
+                                if (dataNoticias.get(i).isFavorite()) {
+                                    counter++;
+                                }
+                            }
+
+                            Log.d("favoritos", String.valueOf(counter));
+
+                            view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.GONE);
+
+                            newsAdapter = new NewsAdapter(getContext(), dataNoticias, false);
+
+                            RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
+
+                            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+
+                            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
+                                @Override
+                                public int getSpanSize(int position) {
+
+                                    if ( position%3 == 0) {
+                                        return 2;
+                                    } else {
+                                        return 1;
+                                    }
+
+                                }
+                            });
+
+                            recyclerView.setLayoutManager(gridLayoutManager);
+
+                            recyclerView.setAdapter(newsAdapter);
+                        }
+                    };
+                    thread.start();
+
                 }
             }
 
@@ -190,7 +289,7 @@ public class NewsFragment extends Fragment {
             }
         });
 
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

@@ -10,19 +10,19 @@ import java.util.List;
 
 public class CurrentUser {
 
-    public List<Noticia> favoriteNews;
-    public String _id;
-    public String user;
-    public String avatar;
-    public String password;
-    public Date created_date;
-    public int __v;
+    private List<String> favoriteNews;
+    private String _id;
+    private String user;
+    private String avatar;
+    private String password;
+    private Date created_date;
+    private int __v;
 
-    public List<Noticia> getFavoriteNews() {
+    public List<String> getFavoriteNews() {
         return favoriteNews;
     }
 
-    public void setFavoriteNews(List<Noticia> favoriteNews) {
+    public void setFavoriteNews(List<String> favoriteNews) {
         this.favoriteNews = favoriteNews;
     }
 

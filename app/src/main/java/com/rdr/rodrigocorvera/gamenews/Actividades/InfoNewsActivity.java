@@ -80,7 +80,7 @@ public class InfoNewsActivity extends AppCompatActivity {
 
     public void addFavorite () {
         Call<NewsFavoriteRoot> newsFavoriteRootCall = ApiAdapter.getApiHandler().setFavoriteNews(
-                LoginActivity.currentUser.get_id(),
+                LoginActivity.currentUser,
                 intentValues[5],
                 "Bearer " + LoginActivity.tokenAccess);
         newsFavoriteRootCall.enqueue(new Callback<NewsFavoriteRoot>() {
@@ -105,7 +105,7 @@ public class InfoNewsActivity extends AppCompatActivity {
 
         Call<MessageHandler> deleteFavoriteCall = ApiAdapter.getApiHandler().deleteFavoriteNews(
                 intentValues[5],
-                LoginActivity.currentUser.get_id(),
+                LoginActivity.currentUser,
                 "Bearer " + LoginActivity.tokenAccess);
 
         deleteFavoriteCall.enqueue(new Callback<MessageHandler>() {

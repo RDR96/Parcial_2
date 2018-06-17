@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Game News</string>
+    <string name="open">Abrir</string>
+    <string name="close">Cerrar</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="favorites">Favoritos</string>
+    <string name="options">Opciones</string>
+    <string name="successful">Exitoso</string>
+    <string name="error">Error</string>
+    <string name="settings">Ajustes</string>
+    <string name="account">Cuenta</string>
+    <string name="current_user">Usuario actual</string>
+    <string name="new_name">Nuevo nombre</string>
+    <string name="new_password">Nueva contraseña</string>
+    <string name="layout_options">Opciones de vista</string>
+    <string name="update">Actualizar</string>
+    <string name="fill_some_field">Rellene algún campo</string>
+    <string name="change_successful">Cambios hechos</string>
+    <string name="tap_again">Toque otra vez</string>
+    <string name="tap_twice">Toque dos veces</string>
+    <string name="cancel">Cancel</string>
+    <string name="favorite_success">Agregado a favoritos</string>
+    <string name="general_info">Informacion</string>
+    <string name="top_players">Puntajes</string>
+    <string name="images">Imagenes</string>
+    <string name="log_out">Cerrar sesión</string>
+    <string name="confirm_log_out">¿Desea cerrar sesión?</string>
+    <string name="news">Noticias</string>
+    <string name="games">Juegos</string>
+    <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="insert_user_name">Ingrese usuario</string>
+    <string name="insert_user_password">Ingrese contraseña</string>
+    <string name="fill_fields">Rellene todos los campos</string>
+    <string name="log_in_error">Error al iniciar sesión</string>
+    <string name="wrong_data_type">Ingrese datos correctos</string>
+    <string name="check_password">Confirme contraseña</string>
+</resources>

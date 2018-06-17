@@ -1,5 +1,7 @@
 package com.rdr.rodrigocorvera.gamenews.Interfaces;
 
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.News;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.User;
 import com.rdr.rodrigocorvera.gamenews.Clases.CurrentUser;
 import com.rdr.rodrigocorvera.gamenews.Clases.Jugador;
 import com.rdr.rodrigocorvera.gamenews.Clases.MessageHandler;
@@ -11,8 +13,6 @@ import com.rdr.rodrigocorvera.gamenews.Clases.UserInfo;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -52,7 +52,7 @@ public interface DataService {
 
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("news")
-    Call<List<Noticia>> getNews(@Header("Authorization") String authHeader);
+    Call<List<News>> getNews(@Header("Authorization") String authHeader);
 
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("news/type/list")
@@ -70,6 +70,8 @@ public interface DataService {
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @GET("users/detail")
     Call<CurrentUser> getCurrentUser(@Header("Authorization") String authHeader);
+
+
 
     /*@Headers("Content-Type: application/x-www-form-urlencoded")
     @DELETE("users/{user_id}/fav")

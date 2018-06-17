@@ -20,7 +20,7 @@
             android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             android:elevation="4dp"
             android:theme="@style/CustomActionBarTheme"
             app:titleTextColor="@color/black"
@@ -30,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/frame_section"
+            android:background="@color/black"
             >
         </FrameLayout>
 
@@ -43,6 +44,8 @@
         android:layout_height="match_parent"
         app:headerLayout="@layout/drawer_header"
         app:menu="@menu/menu_drawer_list"
+        android:background="@color/light_grey"
+        app:itemTextColor="@color/white"
         android:layout_gravity="start"
         >
 

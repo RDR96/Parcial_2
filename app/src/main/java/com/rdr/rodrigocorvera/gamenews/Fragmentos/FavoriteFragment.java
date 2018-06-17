@@ -1,6 +1,8 @@
 package com.rdr.rodrigocorvera.gamenews.Fragmentos;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,13 +13,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.Actividades.MainActivity;
 import com.rdr.rodrigocorvera.gamenews.Adaptadores.NewsAdapter;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.AppDatabase;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.News;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Repositorios.NoticiasRepositorio;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.CurrentUser;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
+import com.rdr.rodrigocorvera.gamenews.Utilidades.InjectorUtils;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.NewsFragmentViewModel;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.NewsViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +36,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity.appDatabase;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,8 +56,12 @@ public class FavoriteFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    static View view;
     private NewsAdapter newsAdapter;
+    Thread thread;
     private OnFragmentInteractionListener mListener;
+    private NewsFragmentViewModel myViewModel;
+    ProgressBar progressBar;
 
     public FavoriteFragment() {
         // Required empty public constructor
@@ -83,58 +100,52 @@ public class FavoriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
+        view = inflater.inflate(R.layout.fragment_favorite, container, false);
 
-        getFavorites(view);
+        //getFavorites(view);
+        progressBar = view.findViewById(R.id.progress_bar_favorite_activity);
+        NoticiasRepositorio.changeValues("",0);
+        NewsViewModelFactory factory = InjectorUtils.provideNewsViewModelFactory(MainActivity.contextGlobal,"",0);
+
+        myViewModel = ViewModelProviders.of(this, factory).get(NewsFragmentViewModel.class);
+
+        myViewModel.getNoticia().observe(this, noticia -> {
+            progressBar.setVisibility(View.VISIBLE);
+            updateNews(noticia);
+        });
+        InjectorUtils.provideRepository(getContext(),"",0);
+
 
         return view;
     }
 
-    public void getFavorites (final View view) {
+    public void updateNews(List< News > noticia) {
 
-        view.findViewById(R.id.progress_bar_favorite_activity).setVisibility(View.VISIBLE);
-        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
+        ArrayList<News>  nuevasnuveas= (ArrayList) noticia;
 
-        noticias.enqueue(new Callback<List<Noticia>>() {
-            @Override
-            public void onResponse(Call<List<Noticia>> call, Response<List<Noticia>> response) {
-
-                if ( response.isSuccessful() ) {
-
-                    List<Noticia> allNews = response.body();
-                    fillArray(view, allNews);
-                }
-
-            }
-            @Override
-            public void onFailure(Call<List<Noticia>> call, Throwable t) {
-
-            }
-        });
-
+        checkIfFavorite(nuevasnuveas);
 
     }
 
-    public void fillArray (final View view, final List<Noticia> allNews) {
-
-
+    void checkIfFavorite (ArrayList<News> news) {
         Call<CurrentUser> logInResponse = ApiAdapter.getApiHandler().getCurrentUser("Bearer "+ LoginActivity.tokenAccess);
 
         logInResponse.enqueue(new Callback<CurrentUser>() {
             @Override
             public void onResponse(Call<CurrentUser> call, Response<CurrentUser> response) {
                 if ( response.isSuccessful() ) {
-
                     CurrentUser currentUser = response.body();
-                    List<Noticia> idNews = currentUser.getFavoriteNews();
-                    ArrayList<Noticia> favoritesNews = (ArrayList<Noticia>) idNews;
+                    List<String> idNews = currentUser.getFavoriteNews();
+                    ArrayList<News> favoritesNews = new ArrayList<>();
 
-                    for ( int i = 0; i < favoritesNews.size(); i++) {
-                        favoritesNews.get(i).setFavorite(true);
+                    for (int i = 0; i < idNews.size(); i++) {
+                        for (int j = 0; j < news.size(); j++) {
+                            if (idNews.get(i).equals(news.get(j).getId()) ) {
+                                favoritesNews.add(news.get(j));
+                                favoritesNews.get(i).setIsFavorite(1);
+                            }
+                        }
                     }
-
-                    view.findViewById(R.id.progress_bar_favorite_activity).setVisibility(View.GONE);
-
                     newsAdapter = new NewsAdapter(getContext(), favoritesNews, true);
 
                     RecyclerView recyclerView = view.findViewById(R.id.favorite_recycler_view);
@@ -142,20 +153,45 @@ public class FavoriteFragment extends Fragment {
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
                     recyclerView.setLayoutManager(linearLayoutManager);
-
+                    progressBar.setVisibility(View.GONE);
                     recyclerView.setAdapter(newsAdapter);
+                } else if ( response.code() == 401){
+                    thread = new Thread(){
+                        public void run() {
+                            appDatabase.newsDao().getAllNews();
+                            appDatabase.playersDao().deleteAllPlayers();
+                            appDatabase.userDao().deleteAllUses();
+                            Intent intent = new Intent(getContext(), LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    };
+                    thread.start();
 
                 }
             }
 
             @Override
             public void onFailure(Call<CurrentUser> call, Throwable t) {
-
+                thread = new Thread(){
+                    public void run(){
+                        AppDatabase appDatabase = AppDatabase.getDatabaseInstance(getContext());
+                        ArrayList<News> favoriteNews = (ArrayList) appDatabase.newsDao().getFavoriteList();
+                        setList(favoriteNews);
+                    }
+                };
             }
         });
 
     }
 
+    void setList(ArrayList<News> favoriteNews){
+        newsAdapter = new NewsAdapter(getContext(), favoriteNews, false);
+        RecyclerView recyclerView = view.findViewById(R.id.favorite_recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setAdapter(newsAdapter);
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

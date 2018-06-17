@@ -13,13 +13,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.AppDatabase;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.User;
 import com.rdr.rodrigocorvera.gamenews.Clases.CurrentUser;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
 import com.rdr.rodrigocorvera.gamenews.Clases.Token;
 import com.rdr.rodrigocorvera.gamenews.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,16 +26,19 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    TextView textButtonToRegister;
     Button buttonSignIn;
     EditText textFieldName;
     EditText textFieldPassword;
     ProgressBar progressBar;
     public static String tokenAccess = null;
-    public static CurrentUser currentUser = null;
+    public static String currentUser = null;
+    public static AppDatabase appDatabase;
+    Thread thread;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDataBase();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         getViews();
@@ -44,8 +46,28 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    public void getDataBase () {
+        appDatabase = AppDatabase.getDatabaseInstance(getApplicationContext());
+
+        final User[] user = new User[1];
+        thread = new Thread(){
+            public void run() {
+                user[0] = appDatabase.userDao().checkIfLog();
+                if (user[0] != null) {
+                    tokenAccess = user[0].getToken();
+                    currentUser = user[0].getId();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        };
+        thread.start();
+
+
+    }
+
     public void getViews () {
-        textButtonToRegister = findViewById(R.id.text_to_register);
         buttonSignIn = findViewById(R.id.button_sign_in);
         textFieldName = findViewById(R.id.textfield_name);
         textFieldPassword = findViewById(R.id.textfield_password);
@@ -53,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void setConfiguration () {
+        appDatabase = AppDatabase.getDatabaseInstance(getApplicationContext());
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,13 +88,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        textButtonToRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
     }
 
@@ -85,15 +102,11 @@ public class LoginActivity extends AppCompatActivity {
 
                 if ( response.isSuccessful() ) {
                     //try{
-
                         Token token = response.body();
-
-                        JSONObject data = null;
-                        //data = new JSONObject(json);
                         tokenAccess = token.getToken();
                         Log.d("token", tokenAccess);
                         if ( !tokenAccess.equals("null")) {
-                            getCurrentUser();
+                            getCurrentUser(tokenAccess);
                             progressBar.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, R.string.successful, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -122,15 +135,36 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void getCurrentUser () {
+    public void getCurrentUser (final String token) {
         final Call<CurrentUser> logInResponse = ApiAdapter.getApiHandler().getCurrentUser("Bearer "+ tokenAccess);
         logInResponse.enqueue(new Callback<CurrentUser>() {
             @Override
-            public void onResponse(Call<CurrentUser> call, Response<CurrentUser> response) {
+            public void onResponse(Call<CurrentUser> call ,final Response<CurrentUser> response) {
                 if ( response.isSuccessful() ) {
-                    currentUser = response.body();
-                    Log.d("Usuario", currentUser.toString());
-                    int i;
+
+                    thread = new Thread(){
+                        public void run() {
+                            User user  = appDatabase.userDao().getCurrentUser(response.body().get_id());
+                            if (user != null) {
+                                user.setLog(1);
+                                user.setToken(token);
+                                appDatabase.userDao().updateUser(user);
+                            } else {
+                                user = new User(response.body().get_id(),
+                                        response.body().getUser(),
+                                        response.body().getPassword(),
+                                        token,1);
+                                appDatabase.userDao().addUser(user);
+                            }
+                            user = appDatabase.userDao().checkIfLog();
+                            String value = user.getId();
+                            Log.d("Usuario", appDatabase.userDao().getCurrentUser(value).getName());
+                            int i;
+
+                        }
+                    };
+                    thread.start();
+
                 }
             }
 
@@ -151,4 +185,8 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

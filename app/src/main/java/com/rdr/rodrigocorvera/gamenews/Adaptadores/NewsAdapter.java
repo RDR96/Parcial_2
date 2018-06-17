@@ -1,14 +1,14 @@
 package com.rdr.rodrigocorvera.gamenews.Adaptadores;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Header;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +19,12 @@ import android.widget.Toast;
 
 import com.rdr.rodrigocorvera.gamenews.Actividades.InfoNewsActivity;
 import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.AppDatabase;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.News;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.Clases.CurrentUser;
 import com.rdr.rodrigocorvera.gamenews.Clases.MessageHandler;
 import com.rdr.rodrigocorvera.gamenews.Clases.NewsFavoriteRoot;
-import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
-import com.rdr.rodrigocorvera.gamenews.Fragmentos.FavoriteFragment;
-import com.rdr.rodrigocorvera.gamenews.Fragmentos.NewsFragment;
 import com.rdr.rodrigocorvera.gamenews.R;
 import com.squareup.picasso.Picasso;
 
@@ -37,13 +37,26 @@ import java.util.ArrayList;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder>{
 
     Context context;
-    ArrayList<Noticia> dataNoticias;
+    ArrayList<News> dataNoticias;
     boolean isFavoriteSection;
-
-    public NewsAdapter (Context context, ArrayList<Noticia> dataNoticias, boolean isFavoriteSection) {
+    String userId;
+    Thread thread;
+    String currentUserId;
+    public NewsAdapter (Context context, ArrayList<News> dataNoticias, boolean isFavoriteSection) {
         this.context = context;
         this.dataNoticias = dataNoticias;
         this.isFavoriteSection = isFavoriteSection;
+        setUserId();
+    }
+
+    void setUserId () {
+        thread = new Thread(){
+            public void run(){
+                AppDatabase appDatabase = AppDatabase.getDatabaseInstance(context);
+                currentUserId = appDatabase.userDao().getIdCurrentUser();
+            }
+        };
+
     }
 
     @Override
@@ -59,7 +72,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(final NewsViewHolder holder, final int position) { //AQUI SE PUEDE ASIGNAR EL CONTENIDO
 
-        if ( dataNoticias.get(position).isFavorite() ) {
+        if ( dataNoticias.get(position).getIsFavorite() == 1) {
             holder.favoriteButton.setImageResource(R.drawable.ic_star_24dp);
         } else {
             holder.favoriteButton.setImageResource(R.drawable.ic_star_border_24dp);
@@ -73,7 +86,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         holder.newsImageContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (dataNoticias.get(position).isFavorite()) {
+                if (dataNoticias.get(position).getIsFavorite() == 1) {
                     sendIntent(position, "isFavorite");
                 } else {
                     sendIntent(position, "isnotFavorite");
@@ -84,7 +97,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         holder.newsInfoContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (dataNoticias.get(position).isFavorite()) {
+                if (dataNoticias.get(position).getIsFavorite() == 1) {
                     sendIntent(position, "isFavorite");
                 } else {
                     sendIntent(position, "isnotFavorite");
@@ -95,7 +108,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( dataNoticias.get(position).isFavorite() ) {
+
+                if ( dataNoticias.get(position).getIsFavorite() == 1 ) {
                     removeFavorite(position, holder);
                 } else {
                     addFavorite(position, holder);
@@ -109,8 +123,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     public void addFavorite(final int position, final NewsViewHolder holder) {
         Call<NewsFavoriteRoot> newsFavoriteRootCall = ApiAdapter.getApiHandler().setFavoriteNews(
-                LoginActivity.currentUser.get_id(),
-                dataNoticias.get(position).get_id(),
+                LoginActivity.currentUser,
+                dataNoticias.get(position).getId(),
                 "Bearer " + LoginActivity.tokenAccess);
         newsFavoriteRootCall.enqueue(new Callback<NewsFavoriteRoot>() {
             @Override
@@ -118,8 +132,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 if ( response.isSuccessful() ) {
                     NewsFavoriteRoot favoriteNew = response.body();
                     if ( favoriteNew.getSuccess().equals("true") ) {
-                        dataNoticias.get(position).setFavorite(true);
-                        holder.favoriteButton.setImageResource(R.drawable.ic_star_border_24dp);
+                        dataNoticias.get(position).setIsFavorite(1);
+                        holder.favoriteButton.setImageResource(R.drawable.ic_star_24dp);
                         Toast.makeText(context, R.string.favorite_success , Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -133,8 +147,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public void removeFavorite(final int position, final NewsViewHolder holder) {
 
         Call<MessageHandler> deleteFavoriteCall = ApiAdapter.getApiHandler().deleteFavoriteNews(
-                dataNoticias.get(position).get_id(),
-                LoginActivity.currentUser.get_id(),
+                dataNoticias.get(position).getId(),
+                LoginActivity.currentUser,
                 "Bearer " + LoginActivity.tokenAccess);
 
         deleteFavoriteCall.enqueue(new Callback<MessageHandler>() {
@@ -149,7 +163,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                             dataNoticias.remove(position);
                             notifyDataSetChanged();
                         } else {
-                            dataNoticias.get(position).setFavorite(false);
+                            dataNoticias.get(position).setIsFavorite(0);
                             holder.favoriteButton.setImageResource(R.drawable.ic_star_border_24dp);
                         }
                     }
@@ -175,7 +189,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 dataNoticias.get(position).getDescription()+ "/-" +
                 dataNoticias.get(position).getBody()+ "/-" +
                 isFavoriteText + "/-" +
-                dataNoticias.get(position).get_id());
+                dataNoticias.get(position).getId());
         context.startActivity(intent);
     }
 
@@ -191,10 +205,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         ImageView favoriteButton;
         LinearLayout newsImageContainer;
         LinearLayout newsInfoContainer;
-        ArrayList<Noticia> arregloNoticias = new ArrayList<Noticia>();
+        ArrayList<News> arregloNoticias = new ArrayList<News>();
         Context context;
 
-        public NewsViewHolder(View itemView, Context context, ArrayList<Noticia> data) {
+        public NewsViewHolder(View itemView, Context context, ArrayList<News> data) {
             super(itemView);
             this.arregloNoticias = data;
             this.context = context;

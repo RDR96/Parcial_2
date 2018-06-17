@@ -1,29 +1,31 @@
 package com.rdr.rodrigocorvera.gamenews.Fragmentos;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
-import com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity;
+import com.rdr.rodrigocorvera.gamenews.Actividades.MainActivity;
 import com.rdr.rodrigocorvera.gamenews.Adaptadores.NewsAdapter;
-import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.News;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Repositorios.NoticiasRepositorio;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
+import com.rdr.rodrigocorvera.gamenews.Utilidades.InjectorUtils;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.GameGeneralInfoFragmentViewModel;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.NewsFragmentViewModel;
+import com.rdr.rodrigocorvera.gamenews.ViewModels.NewsViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,6 +47,8 @@ public class GameGeneralInfoFragment extends Fragment {
     public View view;
     private ArrayList<Noticia> dataNoticias;
     private NewsAdapter newsAdapter;
+    NewsFragmentViewModel myViewModel;
+    ProgressBar progressBar;
     private static Bundle args;
 
     private OnFragmentInteractionListener mListener;
@@ -82,15 +86,64 @@ public class GameGeneralInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_game_general_info, container, false);
+        progressBar = view.findViewById(R.id.progress_bar_game_news);
 
-        checkArguments();
+        getGameNews(mParam1);
 
-        fillArray(view, mParam1);
+
+        //fillArray(view, mParam1);
 
         return view;
     }
+    public void getGameNews(String gameName){
+        checkArguments();
+        NewsViewModelFactory factory = InjectorUtils.provideNewsViewModelFactory(MainActivity.contextGlobal,gameName,1);
 
-    public void fillArray (final View view, String name) {
+        myViewModel = ViewModelProviders.of(this, factory).get(NewsFragmentViewModel.class);
+
+        myViewModel.getNoticia().observe(this, noticia -> {
+            progressBar.setVisibility(View.VISIBLE);
+            updateNews(noticia);
+        });
+        InjectorUtils.provideRepository(getContext(),gameName,1);
+    }
+
+    void updateNews (List<News> noticia) {
+        ArrayList<News>  news = new ArrayList<>();
+
+        for (News element : noticia) {
+            if (element.getGame().equals(mParam1)) {
+                news.add(element);
+            }
+        }
+
+
+        newsAdapter = new NewsAdapter(getContext(), news, false);
+
+        RecyclerView recyclerView = view.findViewById(R.id.news_recycler_view);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
+            @Override
+            public int getSpanSize(int position) {
+
+                if ( position%3 == 0) {
+                    return 2;
+                } else {
+                    return 1;
+                }
+            }
+        });
+
+        recyclerView.setLayoutManager(gridLayoutManager);
+        //recyclerView.setLayoutParams(layoutParams);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setAdapter(newsAdapter);
+
+    }
+
+   /* public void fillArray (final View view, String name) {
 
         dataNoticias = new ArrayList<Noticia>();
 
@@ -152,14 +205,16 @@ public class GameGeneralInfoFragment extends Fragment {
             }
         });
 
-    }
+    }*/
 
     public void getNewGameTitle (String name) {
-        fillArray(view,name);
         args.remove(ARG_PARAM1);
         args.putString(ARG_PARAM1, name);
         this.setArguments(args);
+        getGameNews(name);
     }
+
+
 
     public void checkArguments() {
         if (getArguments() != null) {

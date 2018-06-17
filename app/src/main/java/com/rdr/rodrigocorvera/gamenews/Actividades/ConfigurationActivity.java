@@ -46,7 +46,6 @@ public class ConfigurationActivity extends AppCompatActivity {
 
     public void getViews () {
         accountOptionButton = findViewById(R.id.account_option_container);
-        layoutOptionButton = findViewById(R.id.layout_option_container);
     }
 
     public void setConfiguration() {
@@ -58,12 +57,7 @@ public class ConfigurationActivity extends AppCompatActivity {
             }
         });
 
-        layoutOptionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
     }
 
     public void userSettingsModal() {
@@ -125,18 +119,18 @@ public class ConfigurationActivity extends AppCompatActivity {
         Call<UserInfo> updateResponse;
         if (option == 0) {
             updateResponse = ApiAdapter.getApiHandler().updateName(
-                    currentUser.get_id(),
+                    currentUser,
                     name,
                     "Bearer "+ tokenAccess);
         } else if (option == 1) {
             updateResponse = ApiAdapter.getApiHandler().updatePassword(
-                    currentUser.get_id(),
+                    currentUser,
                     password,
                     "Bearer "+ tokenAccess);
 
         } else {
             updateResponse = ApiAdapter.getApiHandler().updateAllInfo(
-                    currentUser.get_id(),
+                    currentUser,
                     name,
                     password,
                     "Bearer "+ tokenAccess);
@@ -165,15 +159,14 @@ public class ConfigurationActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<CurrentUser> call, Response<CurrentUser> response) {
                 if ( response.isSuccessful() ) {
-                    currentUser = response.body();
-                    currentUserName.setText(currentUser.getUser());
+                    currentUser = response.body().get_id();
+                    currentUserName.setText(response.body().getUser());
                     newNameField.setText("");
                     newPasswordField.setText("");
                     Toast.makeText(ConfigurationActivity.this, R.string.change_successful, Toast.LENGTH_SHORT).show();
                     int i;
                 }
             }
-
             @Override
             public void onFailure(Call<CurrentUser> call, Throwable t) {
 

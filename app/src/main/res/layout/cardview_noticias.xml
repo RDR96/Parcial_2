@@ -58,6 +58,7 @@
                         android:layout_height="wrap_content"
                         android:text="Texto prueba"
                         android:textSize="25sp"
+                        android:textColor="@color/white"
                         android:layout_weight="1"
                         />
 
@@ -66,7 +67,7 @@
                         android:layout_width="match_parent"
                         android:maxLength="75"
                         android:layout_height="wrap_content"
-                        android:text="wefwefefsdswefwefefsdswefwefefsdswefwefefsdswefwefefsdswefwefefsdswefw10"
+                        android:textColor="@color/white"
                         android:textSize="15sp"
                         android:layout_weight="1"
                         />

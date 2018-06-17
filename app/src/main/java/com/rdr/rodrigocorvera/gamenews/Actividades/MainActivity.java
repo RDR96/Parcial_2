@@ -1,35 +1,37 @@
 package com.rdr.rodrigocorvera.gamenews.Actividades;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.media.MediaExtractor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.AppDatabase;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.AppExecutors;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.Games;
+import com.rdr.rodrigocorvera.gamenews.BaseDeDatos.BaseDeDatos.Entidades.User;
 import com.rdr.rodrigocorvera.gamenews.Clases.ApiAdapter;
-import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.Clases.UserInfo;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.FavoriteFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameGeneralInfoFragment;
@@ -37,8 +39,6 @@ import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameHolderFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameImagesFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.GameTopPlayersFragment;
 import com.rdr.rodrigocorvera.gamenews.Fragmentos.NewsFragment;
-import com.rdr.rodrigocorvera.gamenews.Interfaces.DataService;
-import com.rdr.rodrigocorvera.gamenews.Interfaces.SendText;
 import com.rdr.rodrigocorvera.gamenews.Interfaces.SendText;
 import com.rdr.rodrigocorvera.gamenews.R;
 import retrofit2.Call;
@@ -47,7 +47,8 @@ import retrofit2.Response;
 
 import java.util.List;
 import java.util.Random;
-import java.util.zip.Inflater;
+
+import static com.rdr.rodrigocorvera.gamenews.Actividades.LoginActivity.appDatabase;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
                                                                NewsFragment.OnFragmentInteractionListener,
@@ -80,7 +81,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Intent intent;
 
+    Thread thread;
+
     public static UserInfo userInfo;
+
+    public static Context contextGlobal;
+
+    public AppExecutors appExecutors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void setConfiguration () {
+        appExecutors = AppExecutors.getInstance();
+        contextGlobal = getApplicationContext();
         sm = (SendText) this;
         random = new Random();
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -144,26 +153,72 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onResponse(Call<String[]> call, Response<String[]> response) {
 
-                if ( response.isSuccessful() ) {
+                if ( response.code() == 200 ) {
 
                     String gameList[];
                     gameList = response.body();
-
                     Menu items = mNavigationView.getMenu();
                     MenuItem element = items.getItem(1);
                     SubMenu subMenuGames = element.getSubMenu();
 
-                    for (int i=0; i < gameList.length; i++ ) {
-                        subMenuGames.add(setUpperCase(gameList[i]));
 
-                    }
+                    thread = new Thread(){
+                        public void run () {
+                            appDatabase.gamesDao().deleteAllGames();
+                            for (int i=0; i < gameList.length; i++ ) {
+                                Games game = new Games(gameList[i]);
+                                appDatabase.gamesDao().insertGamesTitle(game);
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (int i=0; i < gameList.length; i++ ) {
+                                        subMenuGames.add(setUpperCase(gameList[i]));
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    thread.start();
+
+
+
+                } else if ( response.code() == 401) {
+                    thread = new Thread(){
+                        public void run() {
+                            appDatabase.newsDao().getAllNews();
+                            appDatabase.playersDao().deleteAllPlayers();
+                            appDatabase.userDao().deleteAllUses();
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    };
+                    thread.start();
                 }
 
             }
 
             @Override
             public void onFailure(Call<String[]> call, Throwable t) {
+                thread = new Thread(){
+                    public void run() {
+                        Menu items = mNavigationView.getMenu();
+                        MenuItem element = items.getItem(1);
+                        SubMenu subMenuGames = element.getSubMenu();
+                        List<String> gameTitles = appDatabase.gamesDao().getAllGamesTitle();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < gameTitles.size(); i++) {
+                                    subMenuGames.add(setUpperCase(gameTitles.get(i)));
+                                }
+                            }
+                        });
 
+                    }
+                };
+                thread.start();
             }
         });
 
@@ -205,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else {
 
-            drawerLayout.closeDrawers();
             String gameName = item.getTitle().toString().toLowerCase();
             Log.d("Fragmento", getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName());
 
@@ -219,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
 
-
+        drawerLayout.closeDrawers();
         return false;
     }
 
@@ -241,12 +295,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginActivity.tokenAccess = null;
-                Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
+
+                thread = new Thread(){
+                    public void run(){
+                        LoginActivity.tokenAccess = null;
+                        appDatabase = AppDatabase.getDatabaseInstance(getApplicationContext());
+                        User user = appDatabase.userDao().checkIfLog();
+                        user.setToken("");
+                        user.setLog(0);
+                        appDatabase.userDao().updateUser(user);
+                        Intent intent  = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+
+                        finish();
+                    }
+                };
+                thread.start();
                 alert.hide();
                 alert.dismiss();
-                finish();
             }
         });
 
@@ -270,8 +336,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int i = item.getItemId();
 
-
+        switch (i) {
+            case R.id.action_refresh:
+                    if (getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName().equals("GameHolderFragment")) {
+                        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View view = inflater.inflate(R.layout.fragment_game_holder, null);
+                        String tag = "android:switcher:" + view.findViewById(R.id.view_pager_games_holder).getId() + ":" + 0;
+                        GameGeneralInfoFragment gameGeneralInfoFragment = (GameGeneralInfoFragment) getSupportFragmentManager().findFragmentByTag(tag);
+                        gameGeneralInfoFragment.getGameNews("");
+                    }
+                break;
+        }
 
         //getSupportActionBar().show();
         if (toogle.onOptionsItemSelected(item)) {
@@ -306,12 +383,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         GameTopPlayersFragment gameTopPlayersFragment  = (GameTopPlayersFragment) getSupportFragmentManager().findFragmentByTag(tag);
         gameTopPlayersFragment.getNewGameTitle(name);
 
-        tag = "android:switcher:" + R.id.view_pager_games_holder + ":" + 2;
-        GameImagesFragment gameImagesFragment = (GameImagesFragment) getSupportFragmentManager().findFragmentByTag(tag);
-        gameImagesFragment.getNewGameTitle(name);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawers();
+        } else if (getSupportFragmentManager().findFragmentById(R.id.frame_section).getClass().getSimpleName().equals("GameHolderFragment")){
+            getSupportFragmentManager().findFragmentById(R.id.frame_section).onDestroy();
+            NewsFragment newsFragment = NewsFragment.newInstance("","");
+            getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.frame_section));
+            fm.removeAllViews();
+            getSupportFragmentManager().beginTransaction().add(R.id.frame_section, newsFragment).commit();
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
 }
 
 
