@@ -112,37 +112,6 @@ public class NewsFragment extends LifecycleFragment {
         return view;
     }
 
-    /*public void fillArray () {
-
-        dataNoticias = new ArrayList<Noticia>();
-
-        view.findViewById(R.id.progress_bar_main_activity).setVisibility(View.VISIBLE);
-
-        Call<List<Noticia>> noticias = ApiAdapter.getApiHandler().getNews("Bearer " + LoginActivity.tokenAccess);
-
-        noticias.enqueue(new Callback<List<Noticia>>() {
-            @Override
-            public void onResponse(Call<List<Noticia>> call, Response<List<Noticia>> response) {
-
-                if ( response.isSuccessful() ) {
-
-                    List<Noticia> allNews = response.body();
-
-                    for (Noticia element : allNews) {
-                        if ( element.getDescription()!= null && element.getCoverImage()!= null ) {
-                            dataNoticias.add(element);
-                        }
-                    }
-                    checkIfFavorite(dataNoticias, view);
-                }
-
-            }
-            @Override
-            public void onFailure(Call<List<Noticia>> call, Throwable t) {
-
-            }
-        });
-    }*/
 
     public void updateNews(List<News> noticia) {
 

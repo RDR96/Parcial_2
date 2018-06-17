@@ -1,6 +1,7 @@
 package com.rdr.rodrigocorvera.gamenews.Adaptadores;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.rdr.rodrigocorvera.gamenews.Actividades.InfoNewsActivity;
+import com.rdr.rodrigocorvera.gamenews.Actividades.InfoPlayerActivity;
 import com.rdr.rodrigocorvera.gamenews.Clases.Jugador;
 import com.rdr.rodrigocorvera.gamenews.Clases.Noticia;
 import com.rdr.rodrigocorvera.gamenews.R;
@@ -49,6 +52,19 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.PlayersV
         holder.playerName.setText(dataJugadores.get(position).getName());
         holder.playerBio.setText(dataJugadores.get(position).getBiografia());
         Picasso.with(context).load(dataJugadores.get(position).getAvatar()).fit().into(holder.playerImage);
+        holder.playerCardViewContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, InfoPlayerActivity.class);
+                intent.setAction(intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, dataJugadores.get(position).getName() + "/-"+
+                        dataJugadores.get(position).getGame()+ "/-" +
+                        dataJugadores.get(position).getBiografia()+ "/-" +
+                        dataJugadores.get(position).getAvatar());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
